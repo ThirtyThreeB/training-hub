@@ -1,0 +1,477 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Training Hub">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1b19" media="(prefers-color-scheme: dark)">
+<title>Training Hub</title>
+</head><body>
+<style>
+:root{--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--color-text-primary:#1a1a1a;--color-text-secondary:#666;--color-background-primary:#fff;--color-background-secondary:#f5f5f4;--color-border-tertiary:#e5e5e4;--color-border-secondary:#d4d4d3;--border-radius-lg:10px;--border-radius-md:6px;}
+@media(prefers-color-scheme:dark){:root{--color-text-primary:#f0ede8;--color-text-secondary:#a09d99;--color-background-primary:#1c1b19;--color-background-secondary:#2a2927;--color-border-tertiary:#3a3835;--color-border-secondary:#4a4845;}}
+html,body{height:100%;margin:0;padding:0;background:var(--color-background-secondary);}
+body{padding:12px;font-family:var(--font-sans);-webkit-text-size-adjust:100%;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.app { max-width: 680px; margin: 0 auto; font-family: var(--font-sans); }
+.tabs { display: flex; gap: 2px; margin-bottom: 1rem; border-bottom: 0.5px solid var(--color-border-tertiary); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 10px 12px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -0.5px; white-space: nowrap; min-height: 44px; }
+.tab.active { color: var(--color-text-primary); border-bottom: 2px solid var(--color-text-primary); }
+.tab:hover:not(.active) { color: var(--color-text-primary); }
+.panel { display: none; } .panel.active { display: block; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+.metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
+.metric { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.day-card { border-left: 3px solid var(--color-border-tertiary); padding: 10px 14px; margin-bottom: 8px; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; background: var(--color-background-primary); border-top: 0.5px solid var(--color-border-tertiary); border-right: 0.5px solid var(--color-border-tertiary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+.day-card.squat{border-left-color:#3266ad;}.day-card.deadlift{border-left-color:#1D9E75;}.day-card.peloton{border-left-color:#BA7517;}.day-card.rest{border-left-color:#888780;}
+.day-title{font-size:14px;font-weight:500;color:var(--color-text-primary);}.day-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);}
+.badge-blue{background:#E6F1FB;color:#0C447C;}.badge-green{background:#E1F5EE;color:#085041;}.badge-amber{background:#FAEEDA;color:#633806;}.badge-gray{background:#F1EFE8;color:#444441;}
+.set-row{display:grid;grid-template-columns:28px 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px;}
+.set-num{font-size:12px;color:var(--color-text-secondary);text-align:center;}.set-head{font-size:11px;color:var(--color-text-secondary);text-align:center;}
+.logged-entry{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px;margin-bottom:6px;}
+.logged-entry-header{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
+.logged-entry-actions{display:flex;gap:4px;flex-shrink:0;}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:1.25rem;width:min(520px,94vw);max-height:88vh;overflow-y:auto;}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:1rem;color:var(--color-text-primary);}
+.modal-set-row{display:grid;grid-template-columns:24px 1fr 1fr 1fr;gap:6px;align-items:center;margin-bottom:6px;}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;}
+.import-area{width:100%;min-height:90px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:12px;font-family:monospace;color:var(--color-text-primary);resize:vertical;}
+.week-pill{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
+.ai-response{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem;font-size:14px;line-height:1.7;color:var(--color-text-primary);margin-top:1rem;white-space:pre-wrap;min-height:60px;}
+.log-btn{padding:10px 16px;font-size:14px;cursor:pointer;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);min-height:44px;}
+.log-btn:hover{background:var(--color-background-secondary);}.log-btn.primary{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary);}.log-btn.primary:hover{opacity:0.85;}.log-btn.danger{border-color:#c0392b;color:#c0392b;}
+.shoulder-note{background:#FAEEDA;border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:#633806;margin-bottom:1rem;}
+.phase-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1.5rem;}
+.phase-block{border-radius:var(--border-radius-md);padding:8px 10px;}
+.phase-block.base{background:#E6F1FB;}.phase-label.base{color:#0C447C;}.phase-block.strength{background:#E1F5EE;}.phase-label.strength{color:#085041;}.phase-block.peak{background:#FAECE7;}.phase-label.peak{color:#993C1D;}.phase-block.taper{background:#F1EFE8;}.phase-label.taper{color:#444441;}
+.phase-label{font-size:11px;font-weight:500;}.phase-weeks{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
+.warmup-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);}.warmup-step:last-child{border-bottom:none;}
+.warmup-num{width:22px;height:22px;border-radius:50%;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-secondary);flex-shrink:0;margin-top:1px;}
+.warmup-name{font-size:13px;font-weight:500;color:var(--color-text-primary);}.warmup-detail{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+.warmup-duration{font-size:11px;font-weight:500;padding:2px 8px;border-radius:var(--border-radius-md);flex-shrink:0;margin-left:auto;}
+.wu-squat{background:#E6F1FB;color:#0C447C;}.wu-dl{background:#E1F5EE;color:#085041;}.wu-peloton{background:#FAEEDA;color:#633806;}
+.export-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:12px;font-family:monospace;color:var(--color-text-primary);white-space:pre-wrap;line-height:1.6;max-height:300px;overflow-y:auto;margin-bottom:1rem;}
+.bw-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;}.bw-row:last-child{border-bottom:none;}
+.ride-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);}.ride-row:last-child{border-bottom:none;}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+@media(min-width:480px){.field-grid{grid-template-columns:1fr 1fr 1fr;}}
+select,input[type=number],input[type=text]{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 10px;font-size:16px;font-family:var(--font-sans);width:100%;-webkit-appearance:none;appearance:none;}
+</style>
+<div class="app">
+<div style="margin-bottom:1.5rem;"><div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">Training Hub</div><div style="font-size:13px;color:var(--color-text-secondary);margin-top:2px;">12-week cyclocross prep · Squat & deadlift focus</div></div>
+<div class="tabs">
+<button class="tab active" data-tab="program" onclick="switchTab('program')">Program</button>
+<button class="tab" data-tab="warmup" onclick="switchTab('warmup')">Warm-up</button>
+<button class="tab" data-tab="log" onclick="switchTab('log')">Gym log</button>
+<button class="tab" data-tab="peloton" onclick="switchTab('peloton')">Peloton</button>
+<button class="tab" data-tab="ftp" onclick="switchTab('ftp')">FTP</button>
+<button class="tab" data-tab="bodyweight" onclick="switchTab('bodyweight')">Body weight</button>
+<button class="tab" data-tab="progress" onclick="switchTab('progress')">Progress</button>
+<button class="tab" data-tab="export" onclick="switchTab('export')">Export</button>
+<button class="tab" data-tab="ai" onclick="switchTab('ai')">AI coach</button>
+</div>
+<div id="panel-program" class="panel active">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;"><label class="label" style="margin:0;">Current week:</label><select id="week-select" onchange="updateWeek()" style="width:100px;"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option><option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option><option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option></select><span id="phase-badge" class="week-pill" style="background:#E6F1FB;color:#0C447C;">Base</span></div>
+<div class="phase-bar"><div class="phase-block base"><div class="phase-label base">Base</div><div class="phase-weeks">Weeks 1–4</div></div><div class="phase-block strength"><div class="phase-label strength">Strength</div><div class="phase-weeks">Weeks 5–8</div></div><div class="phase-block peak"><div class="phase-label peak">Peak</div><div class="phase-weeks">Weeks 9–11</div></div><div class="phase-block taper"><div class="phase-label taper">Taper</div><div class="phase-weeks">Week 12</div></div></div>
+<div class="shoulder-note">⚠ Shoulder protocol: dumbbell floor press + landmine press only. No overhead pressing. Right shoulder — stop if pain exceeds 1/10.</div>
+<div id="week-schedule"></div>
+</div>
+<div id="panel-warmup" class="panel">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;"><label class="label" style="margin:0;">Session type:</label><select id="wu-type" onchange="renderWarmup()" style="width:180px;"><option value="squat">Squat day</option><option value="deadlift">Deadlift day</option><option value="peloton">Peloton</option></select></div>
+<div class="shoulder-note">⚠ No overhead raises or behind-the-neck movements. Right shoulder — controlled range only.</div>
+<div id="warmup-content"></div>
+</div>
+<div id="panel-log" class="panel">
+<div class="card">
+<div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem;flex-wrap:wrap;"><select id="log-day" onchange="loadLogTemplate()" style="flex:1;min-width:160px;"><option value="squat">Monday — Squat day</option><option value="deadlift">Wednesday — Deadlift day</option></select><input type="text" id="log-date" placeholder="Date" style="width:110px;" /></div>
+<div id="log-template"></div>
+<div style="margin-top:1rem;display:flex;gap:8px;justify-content:flex-end;"><button class="log-btn primary" onclick="saveLog()">Save workout</button></div>
+</div>
+<div id="recent-logs"></div>
+</div>
+<div id="panel-peloton" class="panel">
+<div class="card">
+<div style="font-size:14px;font-weight:500;margin-bottom:1rem;">Log ride</div>
+<div class="field-grid"><div><div class="label">Date</div><input type="text" id="pel-date" /></div><div><div class="label">Ride type</div><select id="pel-type"><option value="Power Zone Endurance">PZ Endurance</option><option value="Power Zone">Power Zone</option><option value="Intervals">Intervals</option><option value="Easy / Zone 2">Easy / Zone 2</option></select></div><div><div class="label">Duration (min)</div><input type="number" id="pel-duration" placeholder="45" /></div></div>
+<div class="field-grid"><div><div class="label">Output (kJ)</div><input type="number" id="pel-output" placeholder="250" /></div><div><div class="label">Avg watts</div><input type="number" id="pel-watts" placeholder="185" /></div><div><div class="label">Avg speed (mph)</div><input type="number" id="pel-speed" placeholder="18.2" step="0.1" /></div></div>
+<div class="field-grid"><div><div class="label">Distance (mi)</div><input type="number" id="pel-distance" placeholder="13.5" step="0.1" /></div><div><div class="label">Calories</div><input type="number" id="pel-calories" placeholder="420" /></div><div><div class="label">Avg heart rate</div><input type="number" id="pel-hr" placeholder="148" /></div></div>
+<div style="margin-bottom:12px;"><div class="label">Notes (e.g. rode outside instead, route, conditions)</div><textarea id="pel-notes" placeholder="e.g. rode outside on the road bike instead of Peloton — hilly route, windy" style="width:100%;min-height:50px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:14px;font-family:var(--font-sans);resize:vertical;"></textarea></div>
+<div style="display:flex;gap:8px;justify-content:flex-end;"><button class="log-btn primary" onclick="saveRide()">Save ride</button></div>
+</div>
+<div class="metric-row"><div class="metric-card"><div class="label">Last avg watts</div><div class="metric" id="pel-last-watts">—</div></div><div class="metric-card"><div class="label">Best avg watts</div><div class="metric" id="pel-best-watts">—</div></div><div class="metric-card"><div class="label">Rides logged</div><div class="metric" id="pel-count">0</div></div></div>
+<div class="card" style="padding:1rem 1.25rem 0.5rem;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);">Avg watts trend</div><select id="pel-chart-filter" onchange="renderRideChart()" style="font-size:12px;width:auto;padding:3px 8px;"><option value="all">All rides</option><option value="Power Zone Endurance">PZ Endurance</option><option value="Intervals">Intervals</option><option value="Easy / Zone 2">Easy / Zone 2</option></select></div><div style="position:relative;height:180px;"><canvas id="pelWattsChart" role="img" aria-label="Peloton average watts trend">No data yet.</canvas></div></div>
+<div class="card" style="padding:0.75rem 1.25rem;"><div style="font-size:13px;font-weight:500;margin-bottom:8px;">Recent rides</div><div id="ride-history"></div></div>
+</div>
+<div id="panel-ftp" class="panel">
+<div class="card">
+  <div style="font-size:14px;font-weight:500;margin-bottom:1rem;">Log FTP test</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+    <div><div class="label">Date</div><input type="text" id="ftp-date" /></div>
+    <div><div class="label">FTP (watts)</div><input type="number" id="ftp-watts" placeholder="e.g. 220" /></div>
+    <div><div class="label">Test protocol</div><select id="ftp-protocol">
+      <option value="20-min test">20-min test (95%)</option>
+      <option value="Ramp test">Ramp test</option>
+      <option value="8-min test">8-min test (90%)</option>
+      <option value="Manual entry">Manual entry</option>
+    </select></div>
+  </div>
+  <div style="margin-bottom:12px;"><div class="label">Notes (conditions, fatigue, etc.)</div><input type="text" id="ftp-notes" placeholder="e.g. fresh legs, hot garage" /></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="log-btn primary" onclick="saveFTP()">Save FTP test</button></div>
+</div>
+
+<div id="ftp-retest-banner" style="display:none;border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;margin-bottom:1rem;line-height:1.5;"></div>
+
+<div class="metric-row">
+  <div class="metric-card"><div class="label">Current FTP</div><div class="metric" id="ftp-current">—</div></div>
+  <div class="metric-card"><div class="label">Last tested</div><div class="metric" style="font-size:15px;" id="ftp-last-date">—</div></div>
+  <div class="metric-card"><div class="label">Days since test</div><div class="metric" id="ftp-days-since">—</div></div>
+</div>
+
+<div class="card" style="padding:1rem 1.25rem 0.5rem;">
+  <div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--color-text-secondary);">FTP progression</div>
+  <div style="position:relative;height:160px;"><canvas id="ftpChart" role="img" aria-label="FTP progression">No data yet.</canvas></div>
+</div>
+
+<div class="card" style="padding:0.75rem 1.25rem;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <div style="font-size:13px;font-weight:500;">Power zones (current FTP)</div>
+    <span id="ftp-zones-label" style="font-size:12px;color:var(--color-text-secondary);"></span>
+  </div>
+  <div id="ftp-zones"></div>
+</div>
+
+<div class="card" style="padding:0.75rem 1.25rem;">
+  <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Test history</div>
+  <div id="ftp-history"></div>
+</div>
+
+<div class="card" style="padding:0.75rem 1.25rem;">
+  <div style="font-size:13px;font-weight:500;margin-bottom:6px;">When to retest</div>
+  <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7;">
+    <strong style="color:var(--color-text-primary);">Time-based:</strong> Every 4–6 weeks during base/strength phases. During peak (wks 9–11) avoid testing — preserve fatigue for race sharpness. Taper week: test only if no race within 10 days.<br>
+    <strong style="color:var(--color-text-primary);">Performance signals:</strong> Retest when your avg watts on Zone 2 rides feel easy at a heart rate well below threshold, or when you're regularly hitting Z5 power in what should be Z4 intervals.
+  </div>
+</div>
+</div>
+
+<div id="panel-bodyweight" class="panel">
+<div class="card"><div style="font-size:14px;font-weight:500;margin-bottom:1rem;">Log body weight</div><div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;"><div style="flex:1;min-width:100px;"><div class="label">Weight (lbs)</div><input type="number" id="bw-input" placeholder="e.g. 185" step="0.1" /></div><div style="flex:1;min-width:100px;"><div class="label">Date</div><input type="text" id="bw-date" /></div><div style="flex:1;min-width:110px;"><div class="label">Time of day</div><select id="bw-time"><option value="Morning (fasted)">Morning (fasted)</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div><button class="log-btn primary" onclick="saveBodyWeight()" style="height:34px;white-space:nowrap;">Log weight</button></div><div style="font-size:11px;color:var(--color-text-secondary);margin-top:8px;">Tip: same time daily. Morning fasted is most consistent.</div></div>
+<div class="metric-row"><div class="metric-card"><div class="label">Current</div><div class="metric" id="bw-current">—</div></div><div class="metric-card"><div class="label">7-day avg</div><div class="metric" id="bw-avg7">—</div></div><div class="metric-card"><div class="label">Change</div><div class="metric" id="bw-change">—</div></div></div>
+<div class="card" style="padding:1rem 1.25rem 0.5rem;"><div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--color-text-secondary);">Body weight trend</div><div style="position:relative;height:180px;"><canvas id="bwChart" role="img" aria-label="Body weight trend">No data yet.</canvas></div></div>
+<div class="card" style="padding:0.75rem 1.25rem;"><div style="font-size:13px;font-weight:500;margin-bottom:8px;">Log history</div><div id="bw-history"></div></div>
+</div>
+<div id="panel-progress" class="panel">
+<div class="metric-row"><div class="metric-card"><div class="label">Squat e1RM</div><div class="metric" id="prog-squat">—</div></div><div class="metric-card"><div class="label">Deadlift e1RM</div><div class="metric" id="prog-dl">—</div></div><div class="metric-card"><div class="label">Gym sessions</div><div class="metric" id="prog-sessions">0</div></div></div>
+<div class="card" style="padding:1rem 1.25rem 0.5rem;"><div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--color-text-secondary);">Squat progression (estimated 1RM)</div><div style="position:relative;height:160px;"><canvas id="squatChart" role="img" aria-label="Squat e1RM progression">No data yet.</canvas></div></div>
+<div class="card" style="padding:1rem 1.25rem 0.5rem;"><div style="font-size:13px;font-weight:500;margin-bottom:12px;color:var(--color-text-secondary);">Deadlift progression (estimated 1RM)</div><div style="position:relative;height:160px;"><canvas id="dlChart" role="img" aria-label="Deadlift e1RM progression">No data yet.</canvas></div></div>
+</div>
+<div id="panel-export" class="panel">
+<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div style="font-size:14px;font-weight:500;">Export log</div><button class="log-btn" onclick="openImportModal()" style="font-size:12px;padding:4px 10px;">↙ Import data</button></div><div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem;">Copy as plain text for Notes, email, or Strava.</div><div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;"><select id="export-filter" onchange="renderExport()" style="flex:1;min-width:130px;"><option value="all">All gym sessions</option><option value="squat">Squat days</option><option value="deadlift">Deadlift days</option><option value="rides">Peloton rides</option><option value="bodyweight">Body weight</option><option value="ftp">FTP tests</option></select><select id="export-count" onchange="renderExport()" style="width:110px;"><option value="10">Last 10</option><option value="25">Last 25</option><option value="999">All time</option></select></div><div id="export-preview" class="export-box">No data logged yet.</div><div style="display:flex;gap:8px;"><button class="log-btn primary" onclick="copyExport()" id="copy-btn" style="flex:1;">Copy to clipboard</button><button class="log-btn" onclick="renderExport()">Refresh</button></div></div>
+<div class="card" style="padding:0.75rem 1.25rem;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">Strava tip</div><div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;">Peloton rides sync to Strava automatically — connect in Strava app under Settings → Link other services → Peloton. For gym sessions, copy the export above and paste into a manual Strava activity note.</div></div>
+</div>
+<div id="panel-ai" class="panel">
+<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;"><div style="font-size:14px;font-weight:500;">Generate today's programming</div><button class="log-btn" onclick="openAPIKeyModal()" style="font-size:12px;padding:4px 10px;" id="apikey-btn">⚙ API key</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;"><div><div class="label">Session type</div><select id="ai-type"><option value="squat">Squat day</option><option value="deadlift">Deadlift day</option><option value="peloton">Peloton</option></select></div><div><div class="label">Training week</div><select id="ai-week"><option value="1">Week 1 (Base)</option><option value="2">Week 2 (Base)</option><option value="3">Week 3 (Base)</option><option value="4">Week 4 (Base)</option><option value="5">Week 5 (Strength)</option><option value="6">Week 6 (Strength)</option><option value="7">Week 7 (Strength)</option><option value="8">Week 8 (Strength)</option><option value="9">Week 9 (Peak)</option><option value="10">Week 10 (Peak)</option><option value="11">Week 11 (Peak)</option><option value="12">Week 12 (Taper)</option></select></div></div><div style="margin-bottom:10px;"><div class="label">Right shoulder today (0–5 pain)</div><div style="display:flex;align-items:center;gap:10px;"><input type="range" min="0" max="5" value="0" step="1" id="ai-shoulder" oninput="document.getElementById('shoulder-out').textContent=this.value" style="flex:1;" /><span id="shoulder-out" style="font-size:14px;font-weight:500;min-width:16px;">0</span></div></div><div style="margin-bottom:12px;"><div class="label">Notes (fatigue, last session, etc.)</div><input type="text" id="ai-notes" placeholder="e.g. legs feeling heavy, good sleep" /></div><button class="log-btn primary" onclick="generateAI()" style="width:100%;">Generate programming ↗</button></div>
+<div id="ai-output" class="ai-response" style="display:none;"></div>
+</div>
+<!-- API Key modal -->
+<div class="modal-backdrop" id="apikey-modal">
+  <div class="modal">
+    <div class="modal-title">Anthropic API key</div>
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;line-height:1.6;">Your key is stored only in this browser's localStorage — never sent anywhere except directly to Anthropic's API.</div>
+    <div class="label">API key</div>
+    <input type="text" id="apikey-input" placeholder="sk-ant-..." autocomplete="off" autocorrect="off" spellcheck="false" style="font-family:monospace;margin-bottom:8px;"/>
+    <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:1rem;">Get yours at <strong>console.anthropic.com</strong> → API keys</div>
+    <div class="modal-footer">
+      <button class="log-btn danger" onclick="clearAPIKey()" style="margin-right:auto;">Clear key</button>
+      <button class="log-btn" onclick="closeAPIKeyModal()">Cancel</button>
+      <button class="log-btn primary" onclick="saveAPIKey()">Save key</button>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title" id="edit-modal-title">Edit session</div>
+    <div id="edit-modal-body"></div>
+    <div class="modal-footer">
+      <button class="log-btn danger" onclick="deleteLogFromModal()" style="margin-right:auto;">Delete session</button>
+      <button class="log-btn" onclick="closeEditModal()">Cancel</button>
+      <button class="log-btn primary" onclick="saveEditModal()">Save changes</button>
+    </div>
+  </div>
+</div>
+<!-- Import modal -->
+<div class="modal-backdrop" id="import-modal">
+  <div class="modal">
+    <div class="modal-title">Import data from previous version</div><div id="first-run-note" style="display:none;background:#E6F1FB;border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:#0C447C;margin-bottom:12px;">👋 Looks like your first time running v4. Paste your exported JSON from the previous version below, or use Auto-detect if both versions ran in the same browser.</div>
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;line-height:1.6;">Paste exported JSON from your old app below, or click <strong>Auto-detect</strong> to pull from this browser's localStorage (works if both apps ran in the same browser).</div>
+    <textarea class="import-area" id="import-json" placeholder='Paste JSON here, e.g. {"logs":[...],"rides":[...],"bwLogs":[...]}'></textarea>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-top:6px;" id="import-status"></div>
+    <div class="modal-footer">
+      <button class="log-btn" onclick="autoDetectImport()" style="margin-right:auto;">Auto-detect (same browser)</button>
+      <button class="log-btn" onclick="closeImportModal()">Cancel</button>
+      <button class="log-btn primary" onclick="runImport()">Import</button>
+    </div>
+  </div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SK='cyclocross_logs_v1',BK='cyclocross_bw_v1',RK='cyclocross_rides_v1',VK='cyclocross_version_v4',FK='cyclocross_ftp_v1';
+let logs=[],bwLogs=[],rides=[],ftpLogs=[];
+try{const s=localStorage.getItem(SK);if(s)logs=JSON.parse(s);}catch(e){}
+try{const s=localStorage.getItem(BK);if(s)bwLogs=JSON.parse(s);}catch(e){}
+try{const s=localStorage.getItem(RK);if(s)rides=JSON.parse(s);}catch(e){}
+try{const s=localStorage.getItem(FK);if(s)ftpLogs=JSON.parse(s);}catch(e){}
+const sL=()=>{try{localStorage.setItem(SK,JSON.stringify(logs));}catch(e){}};
+const sBW=()=>{try{localStorage.setItem(BK,JSON.stringify(bwLogs));}catch(e){}};
+const sR=()=>{try{localStorage.setItem(RK,JSON.stringify(rides));}catch(e){}};
+const sFTP=()=>{try{localStorage.setItem(FK,JSON.stringify(ftpLogs));}catch(e){}};
+const warmups={squat:[{name:'Assault bike or row',detail:'General blood flow, elevate heart rate',duration:'5 min',cls:'wu-squat'},{name:'Hip 90/90 stretch',detail:'Both sides — opens hip external rotation for squat depth',duration:'1 min each',cls:'wu-squat'},{name:'Glute bridge',detail:'2×15 — activates glutes, sets posterior chain',duration:'2 min',cls:'wu-squat'},{name:'Banded clamshell',detail:'2×15 each — hip abductor activation',duration:'2 min',cls:'wu-squat'},{name:'Goblet squat (light KB)',detail:'2×10 — groove squat pattern, thoracic extension',duration:'2 min',cls:'wu-squat'},{name:'Ankle mobility — wall drill',detail:'10 reps each — improves dorsiflexion for squat depth',duration:'2 min',cls:'wu-squat'},{name:'Squat bar warm-up sets',detail:'Empty bar × 10, 50% × 5, 65% × 3',duration:'5 min',cls:'wu-squat'},{name:'Shoulder prep (right side)',detail:'Band pull-apart 2×15, controlled range — no overhead',duration:'2 min',cls:'wu-squat'}],deadlift:[{name:'Assault bike or row',detail:'General warm-up, wake up posterior chain',duration:'5 min',cls:'wu-dl'},{name:'Cat-cow',detail:'2×10 slow — mobilize thoracic and lumbar spine',duration:'2 min',cls:'wu-dl'},{name:'Hip hinge with dowel',detail:'2×10 — groove hinge pattern, cue neutral spine',duration:'2 min',cls:'wu-dl'},{name:'Romanian deadlift (empty bar)',detail:'2×10 — feel hamstring length, reinforce brace',duration:'2 min',cls:'wu-dl'},{name:'Glute bridge + hip thrust',detail:'2×12 — posterior chain activation',duration:'2 min',cls:'wu-dl'},{name:'Dead bug',detail:'2×8 each — deep core, anti-extension',duration:'2 min',cls:'wu-dl'},{name:'Deadlift bar warm-up sets',detail:'50% × 5, 65% × 3, 75% × 2',duration:'5 min',cls:'wu-dl'},{name:'Shoulder prep (right side)',detail:'Band pull-apart 2×15, controlled range — no overhead',duration:'2 min',cls:'wu-dl'}],peloton:[{name:'Easy spin — flat road',detail:'Low resistance, high cadence (85–95 rpm)',duration:'5 min',cls:'wu-peloton'},{name:'Standing hip circles',detail:'10 each direction — mobilize hip flexors',duration:'1 min',cls:'wu-peloton'},{name:'Seated hamstring stretch',detail:'Both sides',duration:'1 min each',cls:'wu-peloton'},{name:'Progressive cadence drill',detail:'Build 80→100 rpm over 2 min at low resistance',duration:'2 min',cls:'wu-peloton'},{name:'Short zone openers',detail:'3×20 sec at Z4, full recovery between',duration:'3 min',cls:'wu-peloton'}]};
+const wP={
+squat:{
+1:[{name:'Back squat',sets:4,reps:'6',rpe:6},{name:'Romanian deadlift',sets:3,reps:'8',rpe:6},{name:'DB floor press',sets:3,reps:'10',rpe:6,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'10 each',rpe:6},{name:'Plank',sets:3,reps:'30s',rpe:0}],
+2:[{name:'Back squat',sets:4,reps:'5',rpe:7},{name:'Romanian deadlift',sets:3,reps:'8',rpe:7},{name:'DB floor press',sets:3,reps:'10',rpe:7,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'10 each',rpe:7},{name:'Plank',sets:3,reps:'30s',rpe:0}],
+3:[{name:'Back squat',sets:4,reps:'4',rpe:8},{name:'Romanian deadlift',sets:3,reps:'6',rpe:8},{name:'DB floor press',sets:3,reps:'8',rpe:8,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'8 each',rpe:8},{name:'Ab wheel',sets:3,reps:'10',rpe:0}],
+4:[{name:'Back squat',sets:3,reps:'5',rpe:5,note:'Deload'},{name:'Romanian deadlift',sets:2,reps:'8',rpe:5},{name:'DB floor press',sets:2,reps:'10',rpe:5,note:'Shoulder-safe'},{name:'Landmine row',sets:2,reps:'10 each',rpe:5}],
+5:[{name:'Back squat',sets:5,reps:'4',rpe:7},{name:'Romanian deadlift',sets:4,reps:'6',rpe:7},{name:'DB floor press',sets:4,reps:'8',rpe:7,note:'Shoulder-safe'},{name:'Landmine row',sets:4,reps:'8 each',rpe:7},{name:'Ab wheel',sets:3,reps:'10',rpe:0}],
+6:[{name:'Back squat',sets:5,reps:'3',rpe:8},{name:'Romanian deadlift',sets:4,reps:'5',rpe:8},{name:'DB floor press',sets:4,reps:'6',rpe:8,note:'Shoulder-safe'},{name:'Landmine row',sets:4,reps:'6 each',rpe:8},{name:'Ab wheel',sets:3,reps:'10',rpe:0}],
+7:[{name:'Back squat',sets:4,reps:'2',rpe:9},{name:'Romanian deadlift',sets:3,reps:'4',rpe:9},{name:'DB floor press',sets:3,reps:'5',rpe:9,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'5 each',rpe:9}],
+8:[{name:'Back squat',sets:3,reps:'4',rpe:6,note:'Deload'},{name:'Romanian deadlift',sets:2,reps:'6',rpe:6},{name:'DB floor press',sets:2,reps:'8',rpe:6,note:'Shoulder-safe'},{name:'Landmine row',sets:2,reps:'8 each',rpe:6}],
+9:[{name:'Back squat',sets:3,reps:'3',rpe:7},{name:'Romanian deadlift',sets:3,reps:'5',rpe:7},{name:'DB floor press',sets:3,reps:'6',rpe:7,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'6 each',rpe:7}],
+10:[{name:'Back squat',sets:3,reps:'3',rpe:7},{name:'Romanian deadlift',sets:3,reps:'5',rpe:7},{name:'DB floor press',sets:3,reps:'6',rpe:7,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'6 each',rpe:7}],
+11:[{name:'Back squat',sets:3,reps:'3',rpe:7},{name:'Romanian deadlift',sets:3,reps:'5',rpe:7},{name:'DB floor press',sets:3,reps:'6',rpe:7,note:'Shoulder-safe'},{name:'Landmine row',sets:3,reps:'6 each',rpe:7}],
+12:[{name:'Back squat',sets:2,reps:'3',rpe:5,note:'Taper'},{name:'Romanian deadlift',sets:2,reps:'5',rpe:5},{name:'DB floor press',sets:2,reps:'8',rpe:5,note:'Shoulder-safe'},{name:'Landmine row',sets:2,reps:'8 each',rpe:5}]
+},
+deadlift:{
+1:[{name:'Conventional deadlift',sets:4,reps:'6',rpe:6},{name:'Goblet squat',sets:3,reps:'10',rpe:6},{name:'Landmine press',sets:3,reps:'10 each',rpe:6,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'10 each',rpe:6},{name:'Back extension',sets:3,reps:'12',rpe:0}],
+2:[{name:'Conventional deadlift',sets:4,reps:'5',rpe:7},{name:'Goblet squat',sets:3,reps:'10',rpe:7},{name:'Landmine press',sets:3,reps:'10 each',rpe:7,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'10 each',rpe:7},{name:'Back extension',sets:3,reps:'12',rpe:0}],
+3:[{name:'Conventional deadlift',sets:4,reps:'4',rpe:8},{name:'Goblet squat',sets:3,reps:'8',rpe:8},{name:'Landmine press',sets:3,reps:'8 each',rpe:8,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'8 each',rpe:8},{name:'Back extension',sets:3,reps:'12',rpe:0}],
+4:[{name:'Conventional deadlift',sets:3,reps:'5',rpe:5,note:'Deload'},{name:'Goblet squat',sets:2,reps:'10',rpe:5},{name:'Landmine press',sets:2,reps:'10 each',rpe:5,note:'Shoulder-safe'},{name:'DB row',sets:2,reps:'10 each',rpe:5}],
+5:[{name:'Conventional deadlift',sets:4,reps:'4',rpe:7},{name:'Goblet squat',sets:3,reps:'8',rpe:7},{name:'Landmine press',sets:4,reps:'8 each',rpe:7,note:'Shoulder-safe'},{name:'DB row',sets:4,reps:'8 each',rpe:7},{name:'Back extension',sets:3,reps:'10',rpe:0}],
+6:[{name:'Conventional deadlift',sets:4,reps:'3',rpe:8},{name:'Goblet squat',sets:3,reps:'6',rpe:8},{name:'Landmine press',sets:4,reps:'6 each',rpe:8,note:'Shoulder-safe'},{name:'DB row',sets:4,reps:'6 each',rpe:8},{name:'Back extension',sets:3,reps:'10',rpe:0}],
+7:[{name:'Conventional deadlift',sets:3,reps:'2',rpe:9},{name:'Deficit deadlift',sets:2,reps:'3',rpe:8},{name:'Landmine press',sets:3,reps:'5 each',rpe:9,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'5 each',rpe:9}],
+8:[{name:'Conventional deadlift',sets:3,reps:'4',rpe:6,note:'Deload'},{name:'Goblet squat',sets:2,reps:'8',rpe:6},{name:'Landmine press',sets:2,reps:'8 each',rpe:6,note:'Shoulder-safe'},{name:'DB row',sets:2,reps:'8 each',rpe:6}],
+9:[{name:'Conventional deadlift',sets:3,reps:'3',rpe:7},{name:'Deficit deadlift',sets:3,reps:'3',rpe:7},{name:'Landmine press',sets:3,reps:'6 each',rpe:7,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'6 each',rpe:7}],
+10:[{name:'Conventional deadlift',sets:3,reps:'3',rpe:7},{name:'Deficit deadlift',sets:3,reps:'3',rpe:7},{name:'Landmine press',sets:3,reps:'6 each',rpe:7,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'6 each',rpe:7}],
+11:[{name:'Conventional deadlift',sets:3,reps:'3',rpe:7},{name:'Deficit deadlift',sets:3,reps:'3',rpe:7},{name:'Landmine press',sets:3,reps:'6 each',rpe:7,note:'Shoulder-safe'},{name:'DB row',sets:3,reps:'6 each',rpe:7}],
+12:[{name:'Conventional deadlift',sets:2,reps:'3',rpe:5,note:'Taper'},{name:'Landmine press',sets:2,reps:'8 each',rpe:5,note:'Shoulder-safe'},{name:'DB row',sets:2,reps:'8 each',rpe:5}]
+}};
+const pelSched={base:{tu:'Power Zone Endurance · 45–60 min · Z2–Z3',th:'Power Zone · 35 min · Z3–Z4 intervals',fr:'Zone 2 easy · 30–40 min'},strength:{tu:'Power Zone Endurance · 50 min · Z2–Z3',th:'VO2 max intervals · 35 min · 5×3 min Z5',fr:'Zone 2 recovery · 30 min'},peak:{tu:'Power Zone Endurance · 55 min · Z2–Z3',th:'Race-pace intervals · 40 min · 8×2 min Z5+',fr:'Zone 2 flush · 25 min'},taper:{tu:'Easy spin · 30 min · Z2',th:'Short openers · 20 min · 2×2 min Z4',fr:'Rest or 20 min Z1'}};
+function getPhase(w){if(w<=4)return'base';if(w<=8)return'strength';if(w<=11)return'peak';return'taper';}
+function switchTab(t){document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));document.querySelector('[data-tab="'+t+'"]').classList.add('active');document.getElementById('panel-'+t).classList.add('active');if(t==='progress')renderCharts();if(t==='log'){loadLogTemplate();renderRecentLogs();}if(t==='warmup')renderWarmup();if(t==='export')renderExport();if(t==='bodyweight')renderBodyWeight();if(t==='peloton')renderPeloton();if(t==='ftp')renderFTP();}
+function saveRide(){const d=v=>{const el=document.getElementById(v);return el?el.value:'';};const date=d('pel-date')||new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});const watts=parseFloat(d('pel-watts'))||0;if(!watts){alert('Enter at least avg watts to save.');return;}const ride={id:Date.now(),date,type:d('pel-type'),duration:parseFloat(d('pel-duration'))||0,output:parseFloat(d('pel-output'))||0,watts,speed:parseFloat(d('pel-speed'))||0,distance:parseFloat(d('pel-distance'))||0,calories:parseFloat(d('pel-calories'))||0,hr:parseFloat(d('pel-hr'))||0,notes:d('pel-notes')||''};rides.unshift(ride);sR();renderPeloton();const btn=document.querySelector('[onclick="saveRide()"]');btn.textContent='✓ Saved';setTimeout(()=>{btn.textContent='Save ride';},2000);['pel-duration','pel-output','pel-watts','pel-speed','pel-distance','pel-calories','pel-hr','pel-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
+function deleteRide(id){rides=rides.filter(r=>r.id!==id);sR();renderPeloton();}
+let pelChart;
+function renderPeloton(){const allW=rides.filter(r=>r.watts>0).map(r=>r.watts);document.getElementById('pel-count').textContent=rides.length;document.getElementById('pel-last-watts').textContent=rides[0]?.watts?rides[0].watts+' W':'—';document.getElementById('pel-best-watts').textContent=allW.length?Math.max(...allW)+' W':'—';renderRideChart();const histEl=document.getElementById('ride-history');if(!rides.length){histEl.innerHTML='<div style="font-size:13px;color:var(--color-text-secondary);">No rides logged yet.</div>';return;}let html='';rides.slice(0,10).forEach(r=>{const stats=[r.duration&&`${r.duration}min`,r.output&&`${r.output}kJ`,r.watts&&`${r.watts}W`,r.distance&&`${r.distance}mi`,r.speed&&`${r.speed}mph`,r.calories&&`${r.calories}cal`,r.hr&&`${r.hr}bpm`].filter(Boolean).join(' · ');html+=`<div class="ride-row"><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">${r.date} <span class="badge badge-amber" style="margin-left:4px;">${r.type}</span></div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">${stats}</div>${r.notes?`<div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;font-style:italic;">"${r.notes}"</div>`:''}</div><button class="log-btn danger" onclick="deleteRide(${r.id})" style="padding:3px 8px;font-size:11px;">✕</button></div>`;});histEl.innerHTML=html;}
+function renderRideChart(){const filter=document.getElementById('pel-chart-filter')?.value||'all';const data=[...rides].filter(r=>r.watts>0&&(filter==='all'||r.type===filter)).reverse();if(pelChart)pelChart.destroy();pelChart=new Chart(document.getElementById('pelWattsChart'),{type:'line',data:{labels:data.length?data.map(d=>d.date):['No data'],datasets:[{data:data.length?data.map(d=>d.watts):[0],borderColor:'#BA7517',backgroundColor:'#BA751718',borderWidth:2,pointRadius:4,fill:true,tension:0.3,pointBackgroundColor:'#BA7517'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{color:'#888',font:{size:11},callback:v=>v+'W'}},x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}}}});}
+function saveBodyWeight(){const val=parseFloat(document.getElementById('bw-input').value);const date=document.getElementById('bw-date').value||new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});const time=document.getElementById('bw-time').value;if(!val||val<50||val>500){alert('Enter a valid weight between 50–500 lbs.');return;}bwLogs.unshift({id:Date.now(),date,time,weight:val});sBW();document.getElementById('bw-input').value='';renderBodyWeight();const btn=document.querySelector('[onclick="saveBodyWeight()"]');btn.textContent='✓ Logged';setTimeout(()=>{btn.textContent='Log weight';},2000);}
+function deleteBodyWeight(id){bwLogs=bwLogs.filter(e=>e.id!==id);sBW();renderBodyWeight();}
+let bwChart;
+function renderBodyWeight(){const current=bwLogs[0]?.weight;document.getElementById('bw-current').textContent=current?`${current} lbs`:'—';const last7=bwLogs.slice(0,7).map(e=>e.weight);const avg7=last7.length?Math.round((last7.reduce((a,b)=>a+b,0)/last7.length)*10)/10:null;document.getElementById('bw-avg7').textContent=avg7?`${avg7} lbs`:'—';const changeEl=document.getElementById('bw-change');if(bwLogs.length>=2){const oldest=bwLogs[Math.min(bwLogs.length-1,6)].weight;const diff=Math.round((current-oldest)*10)/10;const sign=diff>0?'+':'';changeEl.textContent=`${sign}${diff} lbs`;changeEl.style.color=diff>0?'#1D9E75':diff<0?'#993C1D':'var(--color-text-secondary)';}else{changeEl.textContent='—';}const cd=[...bwLogs].reverse();if(bwChart)bwChart.destroy();bwChart=new Chart(document.getElementById('bwChart'),{type:'line',data:{labels:cd.length?cd.map(d=>d.date):['No data'],datasets:[{data:cd.length?cd.map(d=>d.weight):[0],borderColor:'#7C5CBF',backgroundColor:'#7C5CBF18',borderWidth:2,pointRadius:4,fill:true,tension:0.3,pointBackgroundColor:'#7C5CBF'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{color:'#888',font:{size:11},callback:v=>v+' lbs'}},x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}}}});const histEl=document.getElementById('bw-history');if(!bwLogs.length){histEl.innerHTML='<div style="font-size:13px;color:var(--color-text-secondary);">No entries yet.</div>';return;}let html='';bwLogs.slice(0,15).forEach((e,i)=>{const prev=bwLogs[i+1];let dh='';if(prev){const d=Math.round((e.weight-prev.weight)*10)/10;const sign=d>0?'+':'';const c=d>0?'color:#1D9E75':d<0?'color:#993C1D':'color:var(--color-text-secondary)';dh=`<span style="font-size:11px;font-weight:500;${c}">${sign}${d}</span>`;}html+=`<div class="bw-row"><div><span style="font-weight:500;color:var(--color-text-primary);">${e.weight} lbs</span><span style="margin-left:8px;">${dh}</span></div><div style="display:flex;align-items:center;gap:10px;"><div style="text-align:right;"><div style="font-size:12px;color:var(--color-text-secondary);">${e.date}</div><div style="font-size:11px;color:var(--color-text-secondary);">${e.time}</div></div><button class="log-btn danger" onclick="deleteBodyWeight(${e.id})" style="padding:3px 8px;font-size:11px;">✕</button></div></div>`;});histEl.innerHTML=html;}
+function renderWarmup(){const type=document.getElementById('wu-type').value;const steps=warmups[type];const clsMap={squat:'wu-squat',deadlift:'wu-dl',peloton:'wu-peloton'};const total=steps.reduce((acc,s)=>{const n=parseFloat(s.duration);return acc+(isNaN(n)?2:n);},0);let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;"><div style="font-size:13px;font-weight:500;">${steps.length} steps</div><span class="badge ${clsMap[type]}">~${Math.round(total)} min total</span></div><div class="card" style="padding:0.75rem 1.25rem;">`;steps.forEach((s,i)=>{html+=`<div class="warmup-step"><div class="warmup-num">${i+1}</div><div style="flex:1;"><div class="warmup-name">${s.name}</div><div class="warmup-detail">${s.detail}</div></div><span class="warmup-duration ${s.cls}">${s.duration}</span></div>`;});html+='</div>';if(type!=='peloton')html+=`<div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;padding:0 4px;">Proceed to first working set within 3 minutes of finishing warm-up.</div>`;document.getElementById('warmup-content').innerHTML=html;}
+function updateWeek(){const w=parseInt(document.getElementById('week-select').value);const phase=getPhase(w);const badge=document.getElementById('phase-badge');const labels={base:'Base',strength:'Strength',peak:'Peak',taper:'Taper'};const colors={base:['#E6F1FB','#0C447C'],strength:['#E1F5EE','#085041'],peak:['#FAECE7','#993C1D'],taper:['#F1EFE8','#444441']};badge.textContent=labels[phase];badge.style.background=colors[phase][0];badge.style.color=colors[phase][1];renderSchedule(w,phase);}
+function renderSchedule(w,phase){const pel=pelSched[phase];const sq=wP.squat[w];const dl=wP.deadlift[w];const days=[{label:'Monday',sub:sq.map(e=>`${e.name} ${e.sets}×${e.reps} @RPE${e.rpe||'-'}`).join(' · '),type:'squat',badge:'Squat day',cls:'badge-blue'},{label:'Tuesday',sub:pel.tu,type:'peloton',badge:'Peloton',cls:'badge-amber'},{label:'Wednesday',sub:dl.map(e=>`${e.name} ${e.sets}×${e.reps} @RPE${e.rpe||'-'}`).join(' · '),type:'deadlift',badge:'Deadlift day',cls:'badge-green'},{label:'Thursday',sub:pel.th,type:'peloton',badge:'Peloton',cls:'badge-amber'},{label:'Friday',sub:pel.fr,type:'peloton',badge:'Peloton',cls:'badge-amber'},{label:'Saturday',sub:'Cold plunge + sauna recommended',type:'rest',badge:'Rest',cls:'badge-gray'},{label:'Sunday',sub:'Full recovery',type:'rest',badge:'Rest',cls:'badge-gray'}];document.getElementById('week-schedule').innerHTML=days.map(d=>`<div class="day-card ${d.type}"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="day-title">${d.label}</div><span class="badge ${d.cls}">${d.badge}</span></div><div class="day-sub" style="margin-top:4px;">${d.sub}</div></div>`).join('');}
+const lT={squat:(w)=>wP.squat[w],deadlift:(w)=>wP.deadlift[w]};
+function lastWeightFor(exerciseName){for(const log of logs){const s=log.sets.find(s=>s.exercise===exerciseName&&s.weight>0);if(s)return s.weight;}return null;}
+function loadLogTemplate(){const day=document.getElementById('log-day').value;const w=parseInt(document.getElementById('week-select').value)||1;const exercises=(lT[day]||lT.squat)(w)||wP[day][1];let html='';exercises.forEach((ex,ei)=>{const lastW=lastWeightFor(ex.name);html+=`<div style="margin-bottom:14px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">${ex.name} <span style="font-weight:400;color:var(--color-text-secondary);">(target RPE ${ex.rpe||'-'}${ex.note?' · '+ex.note:''})</span></div>`;html+=`<div class="set-row"><span></span><span class="set-head">Weight (lbs)</span><span class="set-head">Reps</span><span class="set-head">RPE</span><span></span></div>`;for(let s=0;s<ex.sets;s++){html+=`<div class="set-row"><span class="set-num">${s+1}</span><input type="number" id="ex${ei}_s${s}_w" placeholder="lbs" value="${lastW!==null?lastW:''}" /><input type="number" id="ex${ei}_s${s}_reps" placeholder="${ex.reps}" /><input type="number" id="ex${ei}_s${s}_rpe" placeholder="${ex.rpe||'RPE'}" min="1" max="10" /><span></span></div>`;}html+='</div>';});html+=`<div style="margin-top:6px;"><div class="label">Notes for this session (substitutions, conditions, etc.)</div><textarea id="log-notes" placeholder="e.g. subbed leg press for squat — knee tweak; or rode outside instead of Peloton" style="width:100%;min-height:60px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:14px;font-family:var(--font-sans);resize:vertical;"></textarea></div>`;document.getElementById('log-template').innerHTML=html;document.getElementById('log-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function saveLog(){const day=document.getElementById('log-day').value;const date=document.getElementById('log-date').value||'Unknown';const w=parseInt(document.getElementById('week-select').value)||1;const phase=getPhase(w);const exercises=(lT[day]||lT.squat)(w)||wP[day][1];const notes=document.getElementById('log-notes')?.value||'';const sets=[];exercises.forEach((ex,ei)=>{for(let s=0;s<ex.sets;s++){const w_=parseFloat(document.getElementById(`ex${ei}_s${s}_w`)?.value)||0;const r=parseInt(document.getElementById(`ex${ei}_s${s}_reps`)?.value)||0;const rpe=parseInt(document.getElementById(`ex${ei}_s${s}_rpe`)?.value)||0;if(r>0)sets.push({exercise:ex.name,weight:w_,reps:r,rpe,targetRpe:ex.rpe||0});}});if(!sets.length){alert('Add at least one set before saving.');return;}logs.unshift({id:Date.now(),date,day,week:w,phase,sets,notes});sL();renderRecentLogs();const btn=document.querySelector('[onclick="saveLog()"]');btn.textContent='✓ Saved';setTimeout(()=>{btn.textContent='Save workout';},2000);}
+// ── FTP ──────────────────────────────────────────────────────────────
+function saveFTP(){
+  const watts=parseFloat(document.getElementById('ftp-watts').value);
+  if(!watts||watts<50||watts>600){alert('Enter a valid FTP between 50–600 watts.');return;}
+  const date=document.getElementById('ftp-date').value||new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const protocol=document.getElementById('ftp-protocol').value;
+  const notes=document.getElementById('ftp-notes').value;
+  ftpLogs.unshift({id:Date.now(),date,watts,protocol,notes});
+  sFTP();
+  document.getElementById('ftp-watts').value='';
+  document.getElementById('ftp-notes').value='';
+  renderFTP();
+  const btn=document.querySelector('[onclick="saveFTP()"]');
+  btn.textContent='✓ Saved';setTimeout(()=>{btn.textContent='Save FTP test';},2000);
+}
+function deleteFTP(id){if(!confirm('Delete this FTP entry?'))return;ftpLogs=ftpLogs.filter(e=>e.id!==id);sFTP();renderFTP();}
+
+function daysSince(dateStr){
+  // Try to parse "Jun 5" style dates by appending current year
+  const year=new Date().getFullYear();
+  const d=new Date(dateStr+' '+year);
+  if(isNaN(d))return null;
+  // If parsed date is in the future, assume last year
+  const now=new Date();
+  if(d>now)d.setFullYear(year-1);
+  return Math.floor((now-d)/(1000*60*60*24));
+}
+
+function ftpRetestRecommendation(daysSinceLast,currentWeek){
+  const phase=getPhase(currentWeek||parseInt(document.getElementById('week-select').value)||1);
+  if(daysSinceLast===null)return{msg:'No FTP test on record — run a baseline test before starting structured training.',color:'#FAEEDA',textColor:'#633806',icon:'📋'};
+  if(phase==='peak')return{msg:`Peak phase (Wks 9–11): Hold off on testing — preserve freshness for race sharpness. Retest after the race block.`,color:'#FAECE7',textColor:'#993C1D',icon:'🏁'};
+  if(phase==='taper')return{msg:`Taper week: Only test if no race within 10 days. If racing soon, trust your current FTP.`,color:'#F1EFE8',textColor:'#444441',icon:'⚡'};
+  if(daysSinceLast<28)return{msg:`${daysSinceLast} days since last test. You're within the 4-week window — no action needed. Next retest target: ${28-daysSinceLast} days.`,color:'#E1F5EE',textColor:'#085041',icon:'✓'};
+  if(daysSinceLast<42)return{msg:`${daysSinceLast} days since last test. You're in the 4–6 week retest window — good time to test if feeling fresh.`,color:'#FAEEDA',textColor:'#633806',icon:'⏱'};
+  return{msg:`${daysSinceLast} days since last test — overdue. Schedule an FTP test at your next fresh training day.`,color:'#FAECE7',textColor:'#993C1D',icon:'🔔'};
+}
+
+// Coggan power zones as % of FTP
+const FTP_ZONES=[
+  {name:'Z1 — Active recovery',pct:[0,55],color:'#8ab4d4'},
+  {name:'Z2 — Endurance',pct:[56,75],color:'#5a9e78'},
+  {name:'Z3 — Tempo',pct:[76,90],color:'#c4a837'},
+  {name:'Z4 — Lactate threshold',pct:[91,105],color:'#d07a2b'},
+  {name:'Z5 — VO₂ max',pct:[106,120],color:'#c0432a'},
+  {name:'Z6 — Anaerobic',pct:[121,150],color:'#9b2c8f'},
+  {name:'Z7 — Neuromuscular',pct:[151,999],color:'#444'},
+];
+
+let ftpChart;
+function renderFTP(){
+  document.getElementById('ftp-date').value=document.getElementById('ftp-date').value||new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const latest=ftpLogs[0];
+
+  // Metrics
+  document.getElementById('ftp-current').textContent=latest?latest.watts+' W':'—';
+  document.getElementById('ftp-last-date').textContent=latest?latest.date:'—';
+  const days=latest?daysSince(latest.date):null;
+  document.getElementById('ftp-days-since').textContent=days!==null?days:'—';
+
+  // Retest banner
+  const banner=document.getElementById('ftp-retest-banner');
+  const rec=ftpRetestRecommendation(days);
+  banner.style.display='block';
+  banner.style.background=rec.color;
+  banner.style.color=rec.textColor;
+  banner.innerHTML=`<span style="font-size:16px;margin-right:8px;">${rec.icon}</span>${rec.msg}`;
+
+  // Chart
+  const cd=[...ftpLogs].reverse();
+  if(ftpChart)ftpChart.destroy();
+  ftpChart=new Chart(document.getElementById('ftpChart'),{
+    type:'line',
+    data:{
+      labels:cd.length?cd.map(d=>d.date):['No data'],
+      datasets:[{
+        data:cd.length?cd.map(d=>d.watts):[0],
+        borderColor:'#3266ad',backgroundColor:'#3266ad18',
+        borderWidth:2,pointRadius:5,fill:true,tension:0.3,
+        pointBackgroundColor:'#3266ad'
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{color:'#888',font:{size:11},callback:v=>v+'W'}},
+        x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}
+      }
+    }
+  });
+
+  // Power zones
+  const zonesEl=document.getElementById('ftp-zones');
+  const zLabel=document.getElementById('ftp-zones-label');
+  if(!latest){
+    zonesEl.innerHTML='<div style="font-size:12px;color:var(--color-text-secondary);">Log an FTP test to see your zones.</div>';
+    zLabel.textContent='';
+  } else {
+    zLabel.textContent=`based on ${latest.watts}W`;
+    let zh='';
+    FTP_ZONES.forEach(z=>{
+      const lo=Math.round(latest.watts*z.pct[0]/100);
+      const hi=z.pct[1]===999?'∞':Math.round(latest.watts*z.pct[1]/100);
+      const range=z.pct[1]===999?`${lo}+ W`:`${lo}–${hi} W`;
+      const pctBar=Math.min(100,(z.pct[1]===999?100:(z.pct[0]+z.pct[1])/2));
+      zh+=`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);">
+        <div style="width:10px;height:10px;border-radius:50%;background:${z.color};flex-shrink:0;"></div>
+        <div style="flex:1;font-size:12px;color:var(--color-text-primary);">${z.name}</div>
+        <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);min-width:80px;text-align:right;">${range}</div>
+      </div>`;
+    });
+    zonesEl.innerHTML=zh;
+  }
+
+  // History
+  const histEl=document.getElementById('ftp-history');
+  if(!ftpLogs.length){histEl.innerHTML='<div style="font-size:13px;color:var(--color-text-secondary);">No FTP tests logged yet.</div>';return;}
+  let html='';
+  ftpLogs.forEach((e,i)=>{
+    const prev=ftpLogs[i+1];
+    let delta='';
+    if(prev){const d=e.watts-prev.watts;const sign=d>0?'+':'';const c=d>0?'#1D9E75':d<0?'#993C1D':'var(--color-text-secondary)';delta=`<span style="font-size:12px;font-weight:500;color:${c};">${sign}${d}W</span>`;}
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;">
+      <div>
+        <span style="font-weight:500;color:var(--color-text-primary);">${e.watts}W</span>
+        ${delta?`<span style="margin-left:8px;">${delta}</span>`:''}
+        <span class="badge badge-blue" style="margin-left:8px;">${e.protocol}</span>
+        ${e.notes?`<div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px;">${e.notes}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:12px;color:var(--color-text-secondary);text-align:right;">${e.date}</div>
+        <button class="log-btn danger" onclick="deleteFTP(${e.id})" style="padding:3px 8px;font-size:11px;">✕</button>
+      </div>
+    </div>`;
+  });
+  histEl.innerHTML=html;
+}
+// ── end FTP ───────────────────────────────────────────────────────────
+function calcE1RM(w,r){return w&&r?Math.round(w*(1+r/30)):0;}
+function renderRecentLogs(){if(!logs.length){document.getElementById('recent-logs').innerHTML='';return;}let html='<div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;">Logged sessions</div>';logs.forEach(log=>{const ms=log.sets.filter(s=>s.weight>0&&s.reps>0);const best=ms.length?ms.reduce((a,b)=>calcE1RM(a.weight,a.reps)>=calcE1RM(b.weight,b.reps)?a:b):null;const e1rm=best?`best e1RM ${calcE1RM(best.weight,best.reps)} lbs`:'';html+=`<div class="logged-entry"><div class="logged-entry-header"><div><span style="font-weight:500;color:var(--color-text-primary);">${log.date} — ${log.day} day (Wk ${log.week})</span><span style="margin-left:8px;color:var(--color-text-secondary);">${log.sets.length} sets${e1rm?' · '+e1rm:''}</span>${log.notes?`<div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;font-style:italic;">"${log.notes}"</div>`:''}</div><div class="logged-entry-actions"><button class="log-btn" onclick="openEditModal(${log.id})" style="padding:2px 8px;font-size:11px;">Edit</button><button class="log-btn danger" onclick="deleteLog(${log.id})" style="padding:2px 8px;font-size:11px;">✕</button></div></div></div>`;});document.getElementById('recent-logs').innerHTML=html;}
+function deleteLog(id){if(!confirm('Delete this session?'))return;logs=logs.filter(l=>l.id!==id);sL();renderRecentLogs();}
+let editingLogId=null;
+function openEditModal(id){const log=logs.find(l=>l.id===id);if(!log)return;editingLogId=id;document.getElementById('edit-modal-title').textContent=`Edit: ${log.date} — ${log.day} day (Wk ${log.week})`;let html='';if(log.day==='peloton'){const r=log.ride||{};html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;"><div><div class="label">Ride type</div><select id="em_pel_type"><option value="Power Zone Endurance"${r.type==='Power Zone Endurance'?' selected':''}>PZ Endurance</option><option value="Power Zone"${r.type==='Power Zone'?' selected':''}>Power Zone</option><option value="Intervals"${r.type==='Intervals'?' selected':''}>Intervals</option><option value="Easy / Zone 2"${r.type==='Easy / Zone 2'?' selected':''}>Easy / Zone 2</option></select></div><div><div class="label">Duration (min)</div><input type="number" id="em_pel_duration" value="${r.duration||''}" placeholder="45"/></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;"><div><div class="label">Output (kJ)</div><input type="number" id="em_pel_output" value="${r.output||''}" placeholder="250"/></div><div><div class="label">Avg watts</div><input type="number" id="em_pel_watts" value="${r.watts||''}" placeholder="185"/></div><div><div class="label">Avg speed (mph)</div><input type="number" id="em_pel_speed" value="${r.speed||''}" placeholder="18.2" step="0.1"/></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;"><div><div class="label">Distance (mi)</div><input type="number" id="em_pel_distance" value="${r.distance||''}" placeholder="13.5" step="0.1"/></div><div><div class="label">Calories</div><input type="number" id="em_pel_calories" value="${r.calories||''}" placeholder="420"/></div><div><div class="label">Avg heart rate</div><input type="number" id="em_pel_hr" value="${r.hr||''}" placeholder="148"/></div></div>`;}else{const grouped={};log.sets.forEach((s,i)=>{if(!grouped[s.exercise])grouped[s.exercise]=[];grouped[s.exercise].push({...s,_idx:i});});Object.entries(grouped).forEach(([ex,sets])=>{html+=`<div style="margin-bottom:14px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">${ex}</div>`;html+=`<div class="modal-set-row"><span></span><span class="set-head">Weight (lbs)</span><span class="set-head">Reps</span><span class="set-head">RPE</span></div>`;sets.forEach((s,i)=>{html+=`<div class="modal-set-row"><span class="set-num">${i+1}</span><input type="number" id="em_${s._idx}_w" value="${s.weight||''}" placeholder="lbs"/><input type="number" id="em_${s._idx}_r" value="${s.reps||''}" placeholder="reps"/><input type="number" id="em_${s._idx}_rpe" value="${s.rpe||''}" placeholder="RPE" min="1" max="10"/></div>`;});html+='</div>';});}document.getElementById('edit-modal-body').innerHTML=html;document.getElementById('edit-modal').classList.add('open');}
+function saveEditModal(){const log=logs.find(l=>l.id===editingLogId);if(!log)return;if(log.day==='peloton'){if(!log.ride)log.ride={};const g=id=>document.getElementById(id)?.value;log.ride.type=g('em_pel_type')||log.ride.type;log.ride.duration=parseFloat(g('em_pel_duration'))||log.ride.duration||0;log.ride.output=parseFloat(g('em_pel_output'))||log.ride.output||0;log.ride.watts=parseFloat(g('em_pel_watts'))||log.ride.watts||0;log.ride.speed=parseFloat(g('em_pel_speed'))||log.ride.speed||0;log.ride.distance=parseFloat(g('em_pel_distance'))||log.ride.distance||0;log.ride.calories=parseFloat(g('em_pel_calories'))||log.ride.calories||0;log.ride.hr=parseFloat(g('em_pel_hr'))||log.ride.hr||0;const dur=log.ride.duration;log.sets=[{exercise:'Ride duration (min)',weight:0,reps:dur,rpe:0}];}else{log.sets.forEach((s,i)=>{const w=parseFloat(document.getElementById(`em_${i}_w`)?.value);const r=parseInt(document.getElementById(`em_${i}_r`)?.value);const rpe=parseInt(document.getElementById(`em_${i}_rpe`)?.value);if(!isNaN(w))s.weight=w;if(!isNaN(r))s.reps=r;if(!isNaN(rpe))s.rpe=rpe;});}sL();closeEditModal();renderRecentLogs();}
+function deleteLogFromModal(){if(!confirm('Delete this session?'))return;logs=logs.filter(l=>l.id!==editingLogId);sL();closeEditModal();renderRecentLogs();}
+function closeEditModal(){document.getElementById('edit-modal').classList.remove('open');editingLogId=null;}
+document.getElementById('edit-modal').addEventListener('click',function(e){if(e.target===this)closeEditModal();});
+function openImportModal(){document.getElementById('import-json').value='';document.getElementById('import-status').textContent='';document.getElementById('import-modal').classList.add('open');}
+function closeImportModal(){document.getElementById('import-modal').classList.remove('open');}
+document.getElementById('import-modal').addEventListener('click',function(e){if(e.target===this)closeImportModal();});
+function autoDetectImport(){const OLD_KEYS={logs:['cyclocross_logs_v1','training_logs'],rides:['cyclocross_rides_v1','training_rides'],bwLogs:['cyclocross_bw_v1','training_bw'],ftpLogs:['cyclocross_ftp_v1']};const found={};let detected=false;for(const[field,keys]of Object.entries(OLD_KEYS)){for(const k of keys){try{const raw=localStorage.getItem(k);if(raw&&k!==SK&&k!==BK&&k!==RK){const parsed=JSON.parse(raw);if(Array.isArray(parsed)&&parsed.length){found[field]=parsed;detected=true;break;}}}catch(e){}}}if(!detected){document.getElementById('import-status').textContent='Nothing found in localStorage from an older version.';return;}document.getElementById('import-json').value=JSON.stringify(found,null,2);document.getElementById('import-status').textContent=`Found: ${found.logs?.length||0} gym sessions, ${found.rides?.length||0} rides, ${found.bwLogs?.length||0} body weight entries, ${found.ftpLogs?.length||0} FTP tests.`;}
+function runImport(){const raw=document.getElementById('import-json').value.trim();if(!raw){document.getElementById('import-status').textContent='Paste JSON first.';return;}let data;try{data=JSON.parse(raw);}catch(e){document.getElementById('import-status').textContent='Invalid JSON — check the format.';return;}let added={logs:0,rides:0,bwLogs:0,ftpLogs:0};const mergeArray=(existing,incoming,idField='id')=>{if(!Array.isArray(incoming))return 0;const existingIds=new Set(existing.map(e=>e[idField]));let count=0;incoming.forEach(item=>{if(!existingIds.has(item[idField])){existing.push(item);count++;}});return count;};if(data.logs)added.logs=mergeArray(logs,data.logs);if(data.rides)added.rides=mergeArray(rides,data.rides);if(data.bwLogs)added.bwLogs=mergeArray(bwLogs,data.bwLogs);if(data.ftpLogs)added.ftpLogs=mergeArray(ftpLogs,data.ftpLogs);logs.sort((a,b)=>b.id-a.id);rides.sort((a,b)=>b.id-a.id);bwLogs.sort((a,b)=>b.id-a.id);ftpLogs.sort((a,b)=>b.id-a.id);sL();sR();sBW();sFTP();const msg=`Imported: ${added.logs} gym sessions, ${added.rides} rides, ${added.bwLogs} body weight entries, ${added.ftpLogs} FTP tests. (Duplicates skipped.)`;document.getElementById('import-status').textContent=msg;renderRecentLogs();setTimeout(()=>closeImportModal(),2200);}
+let sqChart,dlChart;
+function renderCharts(){const sqData=[],dlData=[];[...logs].reverse().forEach(log=>{if(log.day==='squat'){const sq=log.sets.filter(s=>s.exercise==='Back squat'&&s.weight>0&&s.reps>0);if(sq.length)sqData.push({x:log.date,y:Math.max(...sq.map(s=>calcE1RM(s.weight,s.reps)))});}if(log.day==='deadlift'){const dl=log.sets.filter(s=>s.exercise==='Conventional deadlift'&&s.weight>0&&s.reps>0);if(dl.length)dlData.push({x:log.date,y:Math.max(...dl.map(s=>calcE1RM(s.weight,s.reps)))});}});document.getElementById('prog-sessions').textContent=logs.length;if(sqData.length)document.getElementById('prog-squat').textContent=sqData[sqData.length-1].y+' lbs';if(dlData.length)document.getElementById('prog-dl').textContent=dlData[dlData.length-1].y+' lbs';const mk=(id,data,color,ex)=>{if(ex)ex.destroy();return new Chart(document.getElementById(id),{type:'line',data:{labels:data.length?data.map(d=>d.x):['No data'],datasets:[{data:data.length?data.map(d=>d.y):[0],borderColor:color,backgroundColor:color+'18',borderWidth:2,pointRadius:4,fill:true,tension:0.3,pointBackgroundColor:color}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{color:'#888',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}}}});};sqChart=mk('squatChart',sqData,'#3266ad',sqChart);dlChart=mk('dlChart',dlData,'#1D9E75',dlChart);}
+function renderExport(){const filter=document.getElementById('export-filter').value;const count=parseInt(document.getElementById('export-count').value);const now=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});if(filter==='rides'){const rs=rides.slice(0,count);if(!rs.length){document.getElementById('export-preview').textContent='No rides logged yet.';return;}const lines=rs.map(r=>{const stats=[r.duration&&`${r.duration} min`,r.output&&`${r.output} kJ`,r.watts&&`${r.watts} W avg`,r.distance&&`${r.distance} mi`,r.speed&&`${r.speed} mph`,r.calories&&`${r.calories} cal`,r.hr&&`${r.hr} bpm avg HR`].filter(Boolean).join(' · ');return `${r.date} — ${r.type}\n  ${stats}`;});document.getElementById('export-preview').textContent=`=== Peloton ride log ===\nGenerated: ${now}\n${'─'.repeat(30)}\n\n`+lines.join('\n\n');return;}if(filter==='bodyweight'){const entries=bwLogs.slice(0,count);if(!entries.length){document.getElementById('export-preview').textContent='No body weight entries yet.';return;}document.getElementById('export-preview').textContent=`=== Body weight log ===\nGenerated: ${now}\n${'─'.repeat(30)}\n\n`+entries.map(e=>`${e.date} (${e.time}): ${e.weight} lbs`).join('\n');return;}
+if(filter==='ftp'){const entries=ftpLogs.slice(0,count);if(!entries.length){document.getElementById('export-preview').textContent='No FTP tests logged yet.';return;}document.getElementById('export-preview').textContent=`=== FTP history ===\nGenerated: ${now}\n${'─'.repeat(30)}\n\n`+entries.map((e,i)=>{const prev=ftpLogs[i+1];const delta=prev?(e.watts-prev.watts>0?` (+${e.watts-prev.watts}W)`:(e.watts-prev.watts<0?` (${e.watts-prev.watts}W)`:'')):'';return `${e.date} — ${e.watts}W${delta} · ${e.protocol}${e.notes?' · '+e.notes:''}`;}).join('\n');return;}let filtered=logs;if(filter!=='all')filtered=logs.filter(l=>l.day===filter);filtered=filtered.slice(0,count);if(!filtered.length){document.getElementById('export-preview').textContent='No sessions match this filter.';return;}const fmt=log=>{let lines=[`${log.date} — ${log.day} day (Week ${log.week}, ${log.phase})`];const g={};log.sets.forEach(s=>{if(!g[s.exercise])g[s.exercise]=[];g[s.exercise].push(s);});Object.entries(g).forEach(([ex,sets])=>{lines.push(`  ${ex}`);sets.forEach((s,i)=>{const isTimed=/duration|interval/i.test(ex);lines.push(s.weight>0?`    Set ${i+1}: ${s.weight}lbs × ${s.reps}${s.rpe?` @RPE${s.rpe}`:''}`:(isTimed?`    Set ${i+1}: ${s.reps} min`:`    Set ${i+1}: ${s.reps} reps${s.rpe?` @RPE${s.rpe}`:''}`));});});const ms=log.sets.filter(s=>s.weight>0&&s.reps>0);if(ms.length){const best=ms.reduce((a,b)=>calcE1RM(a.weight,a.reps)>=calcE1RM(b.weight,b.reps)?a:b);lines.push(`  → Best e1RM: ${calcE1RM(best.weight,best.reps)} lbs (${best.exercise})`);}return lines.join('\n');};document.getElementById('export-preview').textContent=`=== Training log ===\nGenerated: ${now}\nSessions: ${filtered.length}\n${'─'.repeat(30)}\n\n`+filtered.map(fmt).join('\n\n');}
+function copyExport(){const text=document.getElementById('export-preview').textContent;if(!text||text.startsWith('No'))return;navigator.clipboard.writeText(text).then(()=>{const btn=document.getElementById('copy-btn');btn.textContent='✓ Copied!';setTimeout(()=>{btn.textContent='Copy to clipboard';},2500);}).catch(()=>{document.getElementById('copy-btn').textContent='Select text above to copy';});}
+function getAPIKey(){try{return localStorage.getItem('cx_apikey')||'';}catch(e){return '';}}
+function openAPIKeyModal(){document.getElementById('apikey-input').value=getAPIKey();document.getElementById('apikey-modal').classList.add('open');}
+function closeAPIKeyModal(){document.getElementById('apikey-modal').classList.remove('open');}
+function saveAPIKey(){const k=document.getElementById('apikey-input').value.trim();if(!k){alert('Paste your API key first.');return;}try{localStorage.setItem('cx_apikey',k);}catch(e){}updateAPIKeyBtn();closeAPIKeyModal();}
+function clearAPIKey(){if(!confirm('Clear saved API key?'))return;try{localStorage.removeItem('cx_apikey');}catch(e){}document.getElementById('apikey-input').value='';updateAPIKeyBtn();closeAPIKeyModal();}
+function updateAPIKeyBtn(){const btn=document.getElementById('apikey-btn');if(getAPIKey()){btn.textContent='⚙ Key set ✓';btn.style.color='#085041';}else{btn.textContent='⚙ Set API key';btn.style.color='#993C1D';}}
+document.getElementById('apikey-modal').addEventListener('click',function(e){if(e.target===this)closeAPIKeyModal();});
+async function generateAI(){
+  const key=getAPIKey();
+  if(!key){openAPIKeyModal();return;}
+  const type=document.getElementById('ai-type').value;
+  const week=document.getElementById('ai-week').value;
+  const shoulder=document.getElementById('ai-shoulder').value;
+  const notes=document.getElementById('ai-notes').value;
+  const phase=getPhase(parseInt(week));
+  const recentLogs=logs.slice(0,5).map(l=>l.date+' '+l.day+' wk'+l.week+': '+l.sets.map(s=>s.exercise+' '+s.weight+'lbs×'+s.reps+(s.rpe?' @RPE'+s.rpe+(s.targetRpe?'(target '+s.targetRpe+')':''):'')).join(', ')+(l.notes?' [session notes: '+l.notes+']':'')).join('\n')||'No previous logs.';
+  const recentRides=rides.slice(0,3).map(r=>r.date+' '+r.type+': '+r.watts+'W avg, '+r.duration+'min, '+r.distance+'mi'+(r.notes?' [ride notes: '+r.notes+']':'')).join('\n')||'No ride data.';
+  const recentBW=bwLogs.slice(0,3).map(e=>e.date+': '+e.weight+' lbs').join(', ')||'No body weight data.';
+  const ftpContext=ftpLogs.length?'Current FTP: '+ftpLogs[0].watts+'W (tested '+ftpLogs[0].date+', '+ftpLogs[0].protocol+')':'FTP not yet tested.';
+  const todayTargets=(wP[type]&&wP[type][parseInt(week)])?wP[type][parseInt(week)].map(e=>e.name+' '+e.sets+'×'+e.reps+' @RPE'+(e.rpe||'-')+(e.note?' ('+e.note+')':'')).join('; '):'No fixed template for this day/week — use judgment.';
+  const prompt='You are a strength and conditioning coach using RPE-based autoregulation (not fixed percentages). Generate a specific, actionable '+type+' workout for week '+week+' ('+phase+' phase) of a 12-week cyclocross prep program.\n\nThis week\'s programmed targets (RPE-anchored, NOT fixed weight — recommend actual weight based on recent logged weights and RPE trend below):\n'+todayTargets+'\n\nAthlete profile:\n- Goals: cyclocross race performance in fall, maintain/gain muscle mass\n- Key lifts: back squat, conventional deadlift, DB floor press, landmine press\n- Right shoulder: '+shoulder+'/5 pain today. NO overhead pressing. Shoulder-safe only.\n- Equipment: full crossfit gym + Peloton at home. Time: 50-60 min max.\n- Recent body weight: '+recentBW+'\n- Cycling fitness: '+ftpContext+'\n\nRecent gym sessions (weight, reps, actual RPE vs target RPE, and any session notes like substitutions or pain flags):\n'+recentLogs+'\n\nRecent Peloton/cycling sessions (including notes if rode outside instead of Peloton):\n'+recentRides+'\n\nToday\'s notes: '+(notes||'none')+'\n\nUsing the RPE history, recommend a specific starting weight for each main lift today (e.g. if last session\'s RPE came in below target, recommend adding weight; if above target, hold or reduce). Account for any substitutions or outside rides noted above when judging recovery. Provide: a brief warm-up (3–4 movements), exact sets/reps/weight/RPE, one coaching cue per main lift, and a recovery note. Be specific and concise.';
+  const output=document.getElementById('ai-output');
+  output.style.display='block';
+  output.innerHTML='<span style="color:var(--color-text-secondary);font-style:italic;">Generating your session...</span>';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error){output.textContent='API error: '+data.error.message;return;}
+    output.textContent=data.content?.map(b=>b.type==='text'?b.text:'').join('')||'No response.';
+  }catch(e){output.textContent='Could not connect. Check your connection and try again.';}
+}updateWeek();loadLogTemplate();renderRecentLogs();renderWarmup();updateAPIKeyBtn();
+try{if(!localStorage.getItem(VK)){localStorage.setItem(VK,'1');document.getElementById('first-run-note').style.display='block';setTimeout(()=>openImportModal(),400);}}catch(e){}
+document.getElementById('bw-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+document.getElementById('pel-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+</script>
+</body></html>
