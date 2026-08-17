@@ -66,7 +66,7 @@ body{padding:12px;font-family:var(--font-sans);-webkit-text-size-adjust:100%;}
 select,input[type=number],input[type=text]{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 10px;font-size:16px;font-family:var(--font-sans);width:100%;-webkit-appearance:none;appearance:none;}
 </style>
 <div class="app">
-<div style="margin-bottom:1.5rem;"><div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">Training Hub</div><div style="font-size:13px;color:var(--color-text-secondary);margin-top:2px;">12-week cyclocross prep · Squat & deadlift focus</div></div>
+<div style="margin-bottom:1.5rem;"><div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">Training Hub</div><div style="font-size:13px;color:var(--color-text-secondary);margin-top:2px;">Strength + Peloton training · One-day 5/3/1 gym cycle</div></div>
 <div class="tabs">
 <button class="tab active" data-tab="program" onclick="switchTab('program')">Program</button>
 <button class="tab" data-tab="warmup" onclick="switchTab('warmup')">Warm-up</button>
@@ -79,19 +79,19 @@ select,input[type=number],input[type=text]{background:var(--color-background-pri
 <button class="tab" data-tab="ai" onclick="switchTab('ai')">AI coach</button>
 </div>
 <div id="panel-program" class="panel active">
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;"><label class="label" style="margin:0;">Current week:</label><select id="week-select" onchange="updateWeek()" style="width:100px;"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option><option value="5">Week 5</option><option value="6">Week 6</option><option value="7">Week 7</option><option value="8">Week 8</option><option value="9">Week 9</option><option value="10">Week 10</option><option value="11">Week 11</option><option value="12">Week 12</option></select><span id="phase-badge" class="week-pill" style="background:#E6F1FB;color:#0C447C;">Base</span></div>
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;"><label class="label" style="margin:0;">Current cycle week:</label><select id="week-select" onchange="updateWeek()" style="width:100px;"><option value="1">Cycle 1 · Week 1</option><option value="2">Cycle 1 · Week 2</option><option value="3">Cycle 1 · Week 3</option><option value="4">Cycle 1 · Week 4</option><option value="5">Cycle 2 · Week 1</option><option value="6">Cycle 2 · Week 2</option><option value="7">Cycle 2 · Week 3</option><option value="8">Cycle 2 · Week 4</option><option value="9">Cycle 3 · Week 1</option><option value="10">Cycle 3 · Week 2</option><option value="11">Cycle 3 · Week 3</option><option value="12">Cycle 3 · Week 4</option></select><span id="phase-badge" class="week-pill" style="background:#E6F1FB;color:#0C447C;">Base</span></div>
 <div class="phase-bar"><div class="phase-block base"><div class="phase-label base">Base</div><div class="phase-weeks">Weeks 1–4</div></div><div class="phase-block strength"><div class="phase-label strength">Strength</div><div class="phase-weeks">Weeks 5–8</div></div><div class="phase-block peak"><div class="phase-label peak">Peak</div><div class="phase-weeks">Weeks 9–11</div></div><div class="phase-block taper"><div class="phase-label taper">Taper</div><div class="phase-weeks">Week 12</div></div></div>
-<div class="shoulder-note">⚠ Shoulder protocol: dumbbell floor press + landmine press only. No overhead pressing. Right shoulder — stop if pain exceeds 1/10.</div>
+<div class="shoulder-note">⚠ Shoulder protocol: floor press + landmine row only. No overhead pressing, kipping, dips, or high-rep shoulder fatigue. Right shoulder — stop or modify if pain exceeds 1/10.</div>
 <div id="week-schedule"></div>
 </div>
 <div id="panel-warmup" class="panel">
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;"><label class="label" style="margin:0;">Session type:</label><select id="wu-type" onchange="renderWarmup()" style="width:180px;"><option value="squat">Squat day</option><option value="deadlift">Deadlift day</option><option value="peloton">Peloton</option></select></div>
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;"><label class="label" style="margin:0;">Session type:</label><select id="wu-type" onchange="renderWarmup()" style="width:180px;"><option value="main">One-day strength</option><option value="squat">Squat warm-up</option><option value="deadlift">Deadlift warm-up</option><option value="peloton">Peloton</option></select></div>
 <div class="shoulder-note">⚠ No overhead raises or behind-the-neck movements. Right shoulder — controlled range only.</div>
 <div id="warmup-content"></div>
 </div>
 <div id="panel-log" class="panel">
 <div class="card">
-<div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem;flex-wrap:wrap;"><select id="log-day" onchange="loadLogTemplate()" style="flex:1;min-width:160px;"><option value="squat">Monday — Squat day</option><option value="deadlift">Wednesday — Deadlift day</option></select><input type="text" id="log-date" placeholder="Date" style="width:110px;" /></div>
+<div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem;flex-wrap:wrap;"><select id="log-day" onchange="loadLogTemplate()" style="flex:1;min-width:160px;"><option value="main">One-day strength session</option></select><input type="text" id="log-date" placeholder="Date" style="width:110px;" /></div>
 <div id="log-template"></div>
 <div style="margin-top:1rem;display:flex;gap:8px;justify-content:flex-end;"><button class="log-btn primary" onclick="saveLog()">Save workout</button></div>
 </div>
@@ -156,8 +156,8 @@ select,input[type=number],input[type=text]{background:var(--color-background-pri
 <div class="card" style="padding:0.75rem 1.25rem;">
   <div style="font-size:13px;font-weight:500;margin-bottom:6px;">When to retest</div>
   <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7;">
-    <strong style="color:var(--color-text-primary);">Time-based:</strong> Every 4–6 weeks during base/strength phases. During peak (wks 9–11) avoid testing — preserve fatigue for race sharpness. Taper week: test only if no race within 10 days.<br>
-    <strong style="color:var(--color-text-primary);">Performance signals:</strong> Retest when your avg watts on Zone 2 rides feel easy at a heart rate well below threshold, or when you're regularly hitting Z5 power in what should be Z4 intervals.
+    <strong style="color:var(--color-text-primary);">Time-based:</strong> Every 4–6 weeks during normal training. Skip testing during deload weeks unless you are specifically using the deload to freshen up for the test.<br>
+    <strong style="color:var(--color-text-primary);">Performance signals:</strong> Retest when endurance rides feel clearly easier at the same watts, heart rate drops for comparable Zone 2 work, or threshold/VO₂ intervals are consistently landing above your current zones.
   </div>
 </div>
 </div>
@@ -178,7 +178,7 @@ select,input[type=number],input[type=text]{background:var(--color-background-pri
 <div class="card" style="padding:0.75rem 1.25rem;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">Strava tip</div><div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;">Peloton rides sync to Strava automatically — connect in Strava app under Settings → Link other services → Peloton. For gym sessions, copy the export above and paste into a manual Strava activity note.</div></div>
 </div>
 <div id="panel-ai" class="panel">
-<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;"><div style="font-size:14px;font-weight:500;">Generate today's programming</div><button class="log-btn" onclick="openAPIKeyModal()" style="font-size:12px;padding:4px 10px;" id="apikey-btn">⚙ API key</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;"><div><div class="label">Session type</div><select id="ai-type"><option value="squat">Squat day</option><option value="deadlift">Deadlift day</option><option value="peloton">Peloton</option></select></div><div><div class="label">Training week</div><select id="ai-week"><option value="1">Week 1 (Base)</option><option value="2">Week 2 (Base)</option><option value="3">Week 3 (Base)</option><option value="4">Week 4 (Base)</option><option value="5">Week 5 (Strength)</option><option value="6">Week 6 (Strength)</option><option value="7">Week 7 (Strength)</option><option value="8">Week 8 (Strength)</option><option value="9">Week 9 (Peak)</option><option value="10">Week 10 (Peak)</option><option value="11">Week 11 (Peak)</option><option value="12">Week 12 (Taper)</option></select></div></div><div style="margin-bottom:10px;"><div class="label">Right shoulder today (0–5 pain)</div><div style="display:flex;align-items:center;gap:10px;"><input type="range" min="0" max="5" value="0" step="1" id="ai-shoulder" oninput="document.getElementById('shoulder-out').textContent=this.value" style="flex:1;" /><span id="shoulder-out" style="font-size:14px;font-weight:500;min-width:16px;">0</span></div></div><div style="margin-bottom:12px;"><div class="label">Notes (fatigue, last session, etc.)</div><input type="text" id="ai-notes" placeholder="e.g. legs feeling heavy, good sleep" /></div><button class="log-btn primary" onclick="generateAI()" style="width:100%;">Generate programming ↗</button></div>
+<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;"><div style="font-size:14px;font-weight:500;">Generate today's programming</div><button class="log-btn" onclick="openAPIKeyModal()" style="font-size:12px;padding:4px 10px;" id="apikey-btn">⚙ API key</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;"><div><div class="label">Session type</div><select id="ai-type"><option value="main">One-day strength</option><option value="peloton">Peloton</option></select></div><div><div class="label">Training week</div><select id="ai-week"><option value="1">Week 1 (Base)</option><option value="2">Week 2 (Base)</option><option value="3">Week 3 (Base)</option><option value="4">Week 4 (Base)</option><option value="5">Week 5 (Strength)</option><option value="6">Week 6 (Strength)</option><option value="7">Week 7 (Strength)</option><option value="8">Week 8 (Strength)</option><option value="9">Week 9 (Peak)</option><option value="10">Week 10 (Peak)</option><option value="11">Week 11 (Peak)</option><option value="12">Week 12 (Taper)</option></select></div></div><div style="margin-bottom:10px;"><div class="label">Right shoulder today (0–5 pain)</div><div style="display:flex;align-items:center;gap:10px;"><input type="range" min="0" max="5" value="0" step="1" id="ai-shoulder" oninput="document.getElementById('shoulder-out').textContent=this.value" style="flex:1;" /><span id="shoulder-out" style="font-size:14px;font-weight:500;min-width:16px;">0</span></div></div><div style="margin-bottom:12px;"><div class="label">Notes (fatigue, last session, etc.)</div><input type="text" id="ai-notes" placeholder="e.g. legs feeling heavy, good sleep" /></div><button class="log-btn primary" onclick="generateAI()" style="width:100%;">Generate programming ↗</button></div>
 <div id="ai-output" class="ai-response" style="display:none;"></div>
 </div>
 <!-- API Key modal -->
@@ -459,7 +459,7 @@ async function generateAI(){
   const recentBW=bwLogs.slice(0,3).map(e=>e.date+': '+e.weight+' lbs').join(', ')||'No body weight data.';
   const ftpContext=ftpLogs.length?'Current FTP: '+ftpLogs[0].watts+'W (tested '+ftpLogs[0].date+', '+ftpLogs[0].protocol+')':'FTP not yet tested.';
   const todayTargets=(wP[type]&&wP[type][parseInt(week)])?wP[type][parseInt(week)].map(e=>e.name+' '+e.sets+'×'+e.reps+' @RPE'+(e.rpe||'-')+(e.note?' ('+e.note+')':'')).join('; '):'No fixed template for this day/week — use judgment.';
-  const prompt='You are a strength and conditioning coach using RPE-based autoregulation (not fixed percentages). Generate a specific, actionable '+type+' workout for week '+week+' ('+phase+' phase) of a 12-week cyclocross prep program.\n\nThis week\'s programmed targets (RPE-anchored, NOT fixed weight — recommend actual weight based on recent logged weights and RPE trend below):\n'+todayTargets+'\n\nAthlete profile:\n- Goals: cyclocross race performance in fall, maintain/gain muscle mass\n- Key lifts: back squat, conventional deadlift, DB floor press, landmine press\n- Right shoulder: '+shoulder+'/5 pain today. NO overhead pressing. Shoulder-safe only.\n- Equipment: full crossfit gym + Peloton at home. Time: 50-60 min max.\n- Recent body weight: '+recentBW+'\n- Cycling fitness: '+ftpContext+'\n\nRecent gym sessions (weight, reps, actual RPE vs target RPE, and any session notes like substitutions or pain flags):\n'+recentLogs+'\n\nRecent Peloton/cycling sessions (including notes if rode outside instead of Peloton):\n'+recentRides+'\n\nToday\'s notes: '+(notes||'none')+'\n\nUsing the RPE history, recommend a specific starting weight for each main lift today (e.g. if last session\'s RPE came in below target, recommend adding weight; if above target, hold or reduce). Account for any substitutions or outside rides noted above when judging recovery. Provide: a brief warm-up (3–4 movements), exact sets/reps/weight/RPE, one coaching cue per main lift, and a recovery note. Be specific and concise.';
+  const prompt='You are a strength and conditioning coach using RPE-based autoregulation (not fixed percentages). Generate a specific, actionable '+type+' workout for week '+week+' ('+phase+' phase) of a strength + Peloton training program.\n\nThis week\'s programmed targets (RPE-anchored, NOT fixed weight — recommend actual weight based on recent logged weights and RPE trend below):\n'+todayTargets+'\n\nAthlete profile:\n- Goals: cyclocross race performance in fall, maintain/gain muscle mass\n- Key lifts: back squat, conventional deadlift, DB floor press, landmine press\n- Right shoulder: '+shoulder+'/5 pain today. NO overhead pressing. Shoulder-safe only.\n- Equipment: full crossfit gym + Peloton at home. Time: 50-60 min max.\n- Recent body weight: '+recentBW+'\n- Cycling fitness: '+ftpContext+'\n\nRecent gym sessions (weight, reps, actual RPE vs target RPE, and any session notes like substitutions or pain flags):\n'+recentLogs+'\n\nRecent Peloton/cycling sessions (including notes if rode outside instead of Peloton):\n'+recentRides+'\n\nToday\'s notes: '+(notes||'none')+'\n\nUsing the RPE history, recommend a specific starting weight for each main lift today (e.g. if last session\'s RPE came in below target, recommend adding weight; if above target, hold or reduce). Account for any substitutions or outside rides noted above when judging recovery. Provide: a brief warm-up (3–4 movements), exact sets/reps/weight/RPE, one coaching cue per main lift, and a recovery note. Be specific and concise.';
   const output=document.getElementById('ai-output');
   output.style.display='block';
   output.innerHTML='<span style="color:var(--color-text-secondary);font-style:italic;">Generating your session...</span>';
@@ -469,7 +469,325 @@ async function generateAI(){
     if(data.error){output.textContent='API error: '+data.error.message;return;}
     output.textContent=data.content?.map(b=>b.type==='text'?b.text:'').join('')||'No response.';
   }catch(e){output.textContent='Could not connect. Check your connection and try again.';}
-}updateWeek();loadLogTemplate();renderRecentLogs();renderWarmup();updateAPIKeyBtn();
+}
+// ── One-day strength cycle override ─────────────────────────────────
+const TM_KEY='strength_training_maxes_v1';
+function getTMs(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(TM_KEY)||'{}');
+    return {
+      squat:Number(saved.squat)||220,
+      deadlift:Number(saved.deadlift)||245,
+      floor:Number(saved.floor)||150
+    };
+  }catch(e){return {squat:220,deadlift:245,floor:150};}
+}
+function saveTMs(){
+  const t={
+    squat:parseFloat(document.getElementById('tm-squat')?.value)||220,
+    deadlift:parseFloat(document.getElementById('tm-deadlift')?.value)||245,
+    floor:parseFloat(document.getElementById('tm-floor')?.value)||150
+  };
+  try{localStorage.setItem(TM_KEY,JSON.stringify(t));}catch(e){}
+  updateWeek();loadLogTemplate();
+}
+function resetTMs(){
+  try{localStorage.setItem(TM_KEY,JSON.stringify({squat:220,deadlift:245,floor:150}));}catch(e){}
+  updateWeek();loadLogTemplate();
+}
+function round5(n){return Math.round(n/5)*5;}
+function cycleWeek(w){return ((parseInt(w||1)-1)%4)+1;}
+function cycleNum(w){return Math.floor((parseInt(w||1)-1)/4)+1;}
+function getPhase(w){const cw=cycleWeek(w);return cw===4?'deload':'strength';}
+function get531Sets(tm,cw){
+  const pct={
+    1:[[65,5,false],[75,5,false],[85,5,true]],
+    2:[[70,3,false],[80,3,false],[90,3,true]],
+    3:[[75,5,false],[85,3,false],[95,1,true]],
+    4:[[40,5,false],[50,5,false],[60,5,false]]
+  }[cw] || [[65,5,false],[75,5,false],[85,5,true]];
+  return pct.map((x,i)=>({set:i+1,pct:x[0],reps:x[1],amrap:x[2],weight:round5(tm*x[0]/100)}));
+}
+function amrapTarget(cw){return cw===1?5:cw===2?3:cw===3?1:5;}
+function amrapRecommendation(liftKey,reps,cw){
+  if(!reps||cw===4)return 'No AMRAP recommendation yet.';
+  const target=amrapTarget(cw);
+  const liftName={squat:'Back squat',deadlift:'Conventional deadlift',floor:'Floor press'}[liftKey]||liftKey;
+  if(reps < target) return `${liftName}: reduce TM next cycle or repeat the week. Final set missed the prescribed minimum.`;
+  if(liftKey==='floor'){
+    if(reps >= target+2) return `${liftName}: eligible for +5 lb next cycle if shoulder stayed quiet.`;
+    return `${liftName}: hold TM. Enough reps, but not enough margin for a clean bump.`;
+  }
+  if(reps >= target+3) return `${liftName}: eligible for +10 lb next cycle.`;
+  if(reps >= target+1) return `${liftName}: hold or small bump only if bar speed was clean.`;
+  return `${liftName}: hold TM next cycle.`;
+}
+function latestAMRAPByLift(){
+  const out={};
+  logs.forEach(log=>{
+    (log.sets||[]).forEach(s=>{
+      if(s.amrap && s.liftKey && !out[s.liftKey]) out[s.liftKey]={...s,date:log.date,week:log.week};
+    });
+  });
+  return out;
+}
+function renderCycleRecommendation(){
+  const latest=latestAMRAPByLift();
+  const keys=['squat','deadlift','floor'];
+  if(!keys.some(k=>latest[k])){
+    return '<div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;">Log the final AMRAP sets to get lift-specific TM recommendations. Week 4 stays deload; bump after the cycle only if reps and shoulder status support it.</div>';
+  }
+  return keys.map(k=>{
+    const s=latest[k];
+    if(!s) return `<div style="font-size:12px;color:var(--color-text-secondary);padding:3px 0;">${{squat:'Back squat',deadlift:'Conventional deadlift',floor:'Floor press'}[k]}: no AMRAP logged yet.</div>`;
+    return `<div style="font-size:12px;color:var(--color-text-primary);padding:3px 0;"><strong>${s.date} · Wk ${s.week}:</strong> ${s.weight} × ${s.reps}. ${amrapRecommendation(k,s.reps,cycleWeek(s.week))}</div>`;
+  }).join('');
+}
+function mainStrengthTemplate(w){
+  const t=getTMs(), cw=cycleWeek(w);
+  const lifts=[
+    {key:'squat',name:'Back squat',tm:t.squat},
+    {key:'deadlift',name:'Conventional deadlift',tm:t.deadlift},
+    {key:'floor',name:'Floor press',tm:t.floor,note:'Shoulder-safe; use pain-free grip/range'}
+  ];
+  const out=[];
+  lifts.forEach(l=>{
+    get531Sets(l.tm,cw).forEach(s=>out.push({...s,exercise:l.name,liftKey:l.key,note:l.note||''}));
+  });
+  out.push({exercise:'Romanian deadlift',sets:3,reps:8,weight:lastWeightFor('Romanian deadlift')||185,rpe:7,note:'Assistance hinge; do not use as a TM lift'});
+  out.push({exercise:'Landmine row',sets:3,reps:10,weight:lastWeightFor('Landmine row')||0,rpe:7,note:'Strict, no shoulder crank'});
+  out.push({exercise:'Core carry or plank',sets:3,reps:'30-45 sec',weight:0,rpe:6,note:'Suitcase carry, Pallof press, or plank'});
+  return out;
+}
+function updateWeek(){
+  const w=parseInt(document.getElementById('week-select').value)||1;
+  const phase=getPhase(w);
+  const badge=document.getElementById('phase-badge');
+  const cw=cycleWeek(w), cn=cycleNum(w);
+  badge.textContent=`Cycle ${cn} · Week ${cw}${cw===4?' deload':''}`;
+  badge.style.background=cw===4?'#F1EFE8':'#E1F5EE';
+  badge.style.color=cw===4?'#444441':'#085041';
+  renderSchedule(w,phase);
+}
+function renderSchedule(w,phase){
+  const t=getTMs(), cw=cycleWeek(w), cn=cycleNum(w);
+  const pel = cw===4
+    ? {tu:'Power Zone Endurance · 30–45 min · Z2 only', th:'Easy spin or off · 20–30 min', fr:'Off, walk, sauna optional'}
+    : {tu:'Power Zone Endurance · 45–75 min · Z2–Z3', th:'VO₂ / Power Zone intervals · 35–50 min', fr:'Easy Zone 2 flush · 25–40 min'};
+  const liftLine = ['squat','deadlift','floor'].map(k=>{
+    const name={squat:'Squat',deadlift:'Deadlift',floor:'Floor press'}[k];
+    const tm={squat:t.squat,deadlift:t.deadlift,floor:t.floor}[k];
+    return `${name}: `+get531Sets(tm,cw).map(s=>`${s.weight}×${s.reps}${s.amrap?'+':''}`).join(', ');
+  }).join(' · ');
+  document.getElementById('week-schedule').innerHTML=`
+    <div class="card">
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">Training maxes</div>
+      <div class="field-grid">
+        <div><div class="label">Back squat TM</div><input type="number" id="tm-squat" value="${t.squat}"></div>
+        <div><div class="label">Deadlift TM</div><input type="number" id="tm-deadlift" value="${t.deadlift}"></div>
+        <div><div class="label">Floor press TM</div><input type="number" id="tm-floor" value="${t.floor}"></div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+        <button class="log-btn" onclick="resetTMs()" style="font-size:12px;padding:6px 10px;">Reset defaults</button>
+        <button class="log-btn primary" onclick="saveTMs()" style="font-size:12px;padding:6px 10px;">Save TMs</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">Cycle ${cn}, Week ${cw}: ${cw===1?'5s':cw===2?'3s':cw===3?'5/3/1':'deload'}</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7;">
+        ${liftLine}<br>
+        Assistance: RDL 3×8, landmine row 3×10, core carry/plank 3 sets.
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">TM recommendations from AMRAPs</div>
+      ${renderCycleRecommendation()}
+    </div>
+    <div class="day-card squat"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="day-title">Main gym day</div><span class="badge badge-blue">5/3/1 strength</span></div><div class="day-sub" style="margin-top:4px;">${liftLine}</div></div>
+    <div class="day-card peloton"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="day-title">Power Zone Endurance</div><span class="badge badge-amber">Peloton</span></div><div class="day-sub" style="margin-top:4px;">${pel.tu}</div></div>
+    <div class="day-card peloton"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="day-title">Quality ride</div><span class="badge badge-amber">Peloton</span></div><div class="day-sub" style="margin-top:4px;">${pel.th}</div></div>
+    <div class="day-card rest"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="day-title">Recovery</div><span class="badge badge-gray">Optional</span></div><div class="day-sub" style="margin-top:4px;">${pel.fr}</div></div>`;
+}
+function renderWarmup(){
+  const type=document.getElementById('wu-type')?.value||'main';
+  if(type==='main'){
+    document.getElementById('warmup-content').innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;"><div style="font-size:13px;font-weight:500;">One-day strength warm-up</div><span class="badge badge-green">~15 min</span></div>
+      <div class="card" style="padding:0.75rem 1.25rem;">
+        ${[
+          ['Easy bike or row','5 minutes easy blood flow. Keep shoulders relaxed.','5 min'],
+          ['Hip + hinge prep','90/90 switches 8/side, glute bridges 15, hip hinge drill 10.','4 min'],
+          ['Shoulder prep','Band external rotation 2×15, scap push-up plus 2×10. No overhead work.','3 min'],
+          ['Ramp sets','For squat/deadlift/floor press: empty/light bar, then 2–3 progressive warm-up sets before work sets.','5 min']
+        ].map((s,i)=>`<div class="warmup-step"><div class="warmup-num">${i+1}</div><div style="flex:1;"><div class="warmup-name">${s[0]}</div><div class="warmup-detail">${s[1]}</div></div><span class="warmup-duration wu-dl">${s[2]}</span></div>`).join('')}
+      </div>`;
+    return;
+  }
+  const oldType=type==='squat'||type==='deadlift'||type==='peloton'?type:'deadlift';
+  const steps=warmups[oldType];const clsMap={squat:'wu-squat',deadlift:'wu-dl',peloton:'wu-peloton'};
+  let html=`<div class="card" style="padding:0.75rem 1.25rem;">`;
+  steps.forEach((s,i)=>{html+=`<div class="warmup-step"><div class="warmup-num">${i+1}</div><div style="flex:1;"><div class="warmup-name">${s.name}</div><div class="warmup-detail">${s.detail}</div></div><span class="warmup-duration ${s.cls}">${s.duration}</span></div>`;});
+  html+='</div>';document.getElementById('warmup-content').innerHTML=html;
+}
+function loadLogTemplate(){
+  const w=parseInt(document.getElementById('week-select').value)||1;
+  const cw=cycleWeek(w);
+  const items=mainStrengthTemplate(w);
+  let html=`<div class="shoulder-note">Log the final “+” set honestly. Stop 1–2 reps before form breakdown. Floor press only counts for TM bumps if the right shoulder stays quiet.</div>`;
+  const liftGroups=['Back squat','Conventional deadlift','Floor press'];
+  liftGroups.forEach(exName=>{
+    const sets=items.filter(x=>x.exercise===exName);
+    html+=`<div style="margin-bottom:14px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">${exName}</div>
+      <div class="set-row"><span></span><span class="set-head">Weight (lbs)</span><span class="set-head">Reps</span><span class="set-head">RPE</span><span></span></div>`;
+    sets.forEach((s,i)=>{
+      html+=`<div class="set-row"><span class="set-num">${s.set}</span><input type="number" id="${s.liftKey}_${i}_w" value="${s.weight}" /><input type="number" id="${s.liftKey}_${i}_reps" placeholder="${s.reps}${s.amrap?'+':''}" /><input type="number" id="${s.liftKey}_${i}_rpe" placeholder="${s.amrap?'AMRAP':'RPE'}" min="1" max="10" /><span style="font-size:11px;color:var(--color-text-secondary);">${s.amrap?'+':''}</span></div>`;
+    });
+    html+='</div>';
+  });
+  const assists=items.filter(x=>!liftGroups.includes(x.exercise));
+  assists.forEach((ex,ei)=>{
+    html+=`<div style="margin-bottom:14px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">${ex.exercise} <span style="font-weight:400;color:var(--color-text-secondary);">(${ex.note||'assistance'})</span></div>`;
+    html+=`<div class="set-row"><span></span><span class="set-head">Weight</span><span class="set-head">Reps</span><span class="set-head">RPE</span><span></span></div>`;
+    for(let s=0;s<ex.sets;s++){
+      html+=`<div class="set-row"><span class="set-num">${s+1}</span><input type="number" id="as${ei}_${s}_w" placeholder="lbs" value="${ex.weight||''}" /><input type="number" id="as${ei}_${s}_reps" placeholder="${ex.reps}" /><input type="number" id="as${ei}_${s}_rpe" placeholder="${ex.rpe||'RPE'}" min="1" max="10" /><span></span></div>`;
+    }
+    html+='</div>';
+  });
+  html+=`<div style="margin-top:6px;"><div class="label">Session notes / shoulder status</div><textarea id="log-notes" placeholder="e.g. right shoulder 0/10; floor press felt clean; deadlift grip okay" style="width:100%;min-height:60px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-size:14px;font-family:var(--font-sans);resize:vertical;"></textarea></div>`;
+  document.getElementById('log-template').innerHTML=html;
+  document.getElementById('log-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function saveLog(){
+  const date=document.getElementById('log-date').value||'Unknown';
+  const w=parseInt(document.getElementById('week-select').value)||1;
+  const cw=cycleWeek(w);
+  const notes=document.getElementById('log-notes')?.value||'';
+  const sets=[];
+  ['squat','deadlift','floor'].forEach(k=>{
+    const exName={squat:'Back squat',deadlift:'Conventional deadlift',floor:'Floor press'}[k];
+    get531Sets({squat:getTMs().squat,deadlift:getTMs().deadlift,floor:getTMs().floor}[k],cw).forEach((s,i)=>{
+      const wt=parseFloat(document.getElementById(`${k}_${i}_w`)?.value)||0;
+      const reps=parseInt(document.getElementById(`${k}_${i}_reps`)?.value)||0;
+      const rpe=parseInt(document.getElementById(`${k}_${i}_rpe`)?.value)||0;
+      if(reps>0)sets.push({exercise:exName,liftKey:k,weight:wt,reps,rpe,targetReps:s.reps,pct:s.pct,amrap:!!s.amrap});
+    });
+  });
+  const assists=mainStrengthTemplate(w).filter(x=>!['Back squat','Conventional deadlift','Floor press'].includes(x.exercise));
+  assists.forEach((ex,ei)=>{
+    for(let s=0;s<ex.sets;s++){
+      const wt=parseFloat(document.getElementById(`as${ei}_${s}_w`)?.value)||0;
+      const reps=parseInt(document.getElementById(`as${ei}_${s}_reps`)?.value)||0;
+      const rpe=parseInt(document.getElementById(`as${ei}_${s}_rpe`)?.value)||0;
+      if(reps>0)sets.push({exercise:ex.exercise,weight:wt,reps,rpe,targetRpe:ex.rpe||0});
+    }
+  });
+  if(!sets.length){alert('Add at least one set before saving.');return;}
+  logs.unshift({id:Date.now(),date,day:'main',week:w,phase:getPhase(w),sets,notes});
+  sL();renderRecentLogs();updateWeek();
+  const btn=document.querySelector('[onclick="saveLog()"]');btn.textContent='✓ Saved';setTimeout(()=>{btn.textContent='Save workout';},2000);
+}
+function renderRecentLogs(){
+  if(!logs.length){document.getElementById('recent-logs').innerHTML='';return;}
+  let html='<div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;">Logged sessions</div>';
+  logs.forEach(log=>{
+    const ms=(log.sets||[]).filter(s=>s.weight>0&&s.reps>0);
+    const best=ms.length?ms.reduce((a,b)=>calcE1RM(a.weight,a.reps)>=calcE1RM(b.weight,b.reps)?a:b):null;
+    const amraps=(log.sets||[]).filter(s=>s.amrap).map(s=>`${s.exercise} ${s.weight}×${s.reps}`).join(' · ');
+    const label=log.day==='main'?'strength':log.day;
+    html+=`<div class="logged-entry"><div class="logged-entry-header"><div><span style="font-weight:500;color:var(--color-text-primary);">${log.date} — ${label} day (Wk ${log.week})</span><span style="margin-left:8px;color:var(--color-text-secondary);">${log.sets.length} sets${best?' · best e1RM '+calcE1RM(best.weight,best.reps)+' lbs':''}</span>${amraps?`<div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;">AMRAPs: ${amraps}</div>`:''}${log.notes?`<div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;font-style:italic;">"${log.notes}"</div>`:''}</div><div class="logged-entry-actions"><button class="log-btn danger" onclick="deleteLog(${log.id})" style="padding:2px 8px;font-size:11px;">✕</button></div></div></div>`;
+  });
+  document.getElementById('recent-logs').innerHTML=html;
+}
+function renderCharts(){
+  const sqData=[],dlData=[],fpData=[];
+  [...logs].reverse().forEach(log=>{
+    const add=(arr,name)=>{const ss=(log.sets||[]).filter(s=>s.exercise===name&&s.weight>0&&s.reps>0);if(ss.length)arr.push({x:log.date,y:Math.max(...ss.map(s=>calcE1RM(s.weight,s.reps)))});};
+    add(sqData,'Back squat'); add(dlData,'Conventional deadlift'); add(fpData,'Floor press');
+  });
+  document.getElementById('prog-sessions').textContent=logs.length;
+  document.getElementById('prog-squat').textContent=sqData.length?sqData[sqData.length-1].y+' lbs':'—';
+  document.getElementById('prog-dl').textContent=dlData.length?dlData[dlData.length-1].y+' lbs':'—';
+  const mk=(id,data,color,ex)=>{if(ex)ex.destroy();return new Chart(document.getElementById(id),{type:'line',data:{labels:data.length?data.map(d=>d.x):['No data'],datasets:[{data:data.length?data.map(d=>d.y):[0],borderColor:color,backgroundColor:color+'18',borderWidth:2,pointRadius:4,fill:true,tension:0.3,pointBackgroundColor:color}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(128,128,128,0.1)'},ticks:{color:'#888',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}}}}});};
+  sqChart=mk('squatChart',sqData,'#3266ad',sqChart); dlChart=mk('dlChart',dlData,'#1D9E75',dlChart);
+}
+function renderExport(){
+  const filter=document.getElementById('export-filter').value;
+  const count=parseInt(document.getElementById('export-count').value);
+  const now=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  if(filter==='rides' || filter==='bodyweight' || filter==='ftp'){
+    // preserve original specialized export by temporarily using existing collections
+  }
+  if(filter==='rides'){
+    const rs=rides.slice(0,count);if(!rs.length){document.getElementById('export-preview').textContent='No rides logged yet.';return;}
+    document.getElementById('export-preview').textContent=`=== Ride log ===\nGenerated: ${now}\n${'─'.repeat(30)}\n\n`+rs.map(r=>`${r.date} — ${r.type}\n  ${[r.duration&&r.duration+' min',r.output&&r.output+' kJ',r.watts&&r.watts+' W avg',r.distance&&r.distance+' mi',r.hr&&r.hr+' bpm avg HR'].filter(Boolean).join(' · ')}${r.notes?'\n  Notes: '+r.notes:''}`).join('\n\n');return;
+  }
+  if(filter==='bodyweight'){
+    const entries=bwLogs.slice(0,count);if(!entries.length){document.getElementById('export-preview').textContent='No body weight entries yet.';return;}
+    document.getElementById('export-preview').textContent=`=== Body weight log ===\nGenerated: ${now}\n${'─'.repeat(30)}\n\n`+entries.map(e=>`${e.date} (${e.time}): ${e.weight} lbs`).join('\n');return;
+  }
+  if(filter==='ftp'){
+    const entries=ftpLogs.slice(0,count);if(!entries.length){document.getElementById('export-preview').textContent='No FTP tests logged yet.';return;}
+    document.getElementById('export-preview').textContent=`=== FTP history ===\nGenerated: ${now}\n${'─'.repeat(30)}\n\n`+entries.map((e,i)=>`${e.date} — ${e.watts}W · ${e.protocol}${e.notes?' · '+e.notes:''}`).join('\n');return;
+  }
+  let filtered=logs.slice(0,count);
+  if(!filtered.length){document.getElementById('export-preview').textContent='No sessions logged yet.';return;}
+  const fmt=log=>{
+    let lines=[`${log.date} — ${log.day==='main'?'strength':log.day} day (Week ${log.week}, ${log.phase})`];
+    const g={};(log.sets||[]).forEach(s=>{if(!g[s.exercise])g[s.exercise]=[];g[s.exercise].push(s);});
+    Object.entries(g).forEach(([ex,sets])=>{
+      lines.push(`  ${ex}`);
+      sets.forEach((s,i)=>lines.push(`    Set ${i+1}: ${s.weight||0}lbs × ${s.reps}${s.amrap?' + set':''}${s.rpe?` @RPE${s.rpe}`:''}`));
+    });
+    if(log.notes) lines.push(`  Notes: ${log.notes}`);
+    return lines.join('\n');
+  };
+  document.getElementById('export-preview').textContent=`=== Training log ===\nGenerated: ${now}\nSessions: ${filtered.length}\n${'─'.repeat(30)}\n\n`+filtered.map(fmt).join('\n\n');
+}
+
+async function generateAI(){
+  const key=getAPIKey();
+  if(!key){openAPIKeyModal();return;}
+  const type=document.getElementById('ai-type').value;
+  const week=parseInt(document.getElementById('ai-week').value)||1;
+  const shoulder=document.getElementById('ai-shoulder').value;
+  const notes=document.getElementById('ai-notes').value;
+  const cw=cycleWeek(week), cn=cycleNum(week);
+  const recentLogs=logs.slice(0,5).map(l=>l.date+' '+(l.day==='main'?'strength':l.day)+' wk'+l.week+': '+(l.sets||[]).map(s=>s.exercise+' '+(s.weight||0)+'lbs×'+s.reps+(s.amrap?' AMRAP':'')+(s.rpe?' @RPE'+s.rpe:'')).join(', ')+(l.notes?' [notes: '+l.notes+']':'')).join('\n')||'No previous gym logs.';
+  const recentRides=rides.slice(0,3).map(r=>r.date+' '+r.type+': '+r.watts+'W avg, '+r.duration+'min, '+r.distance+'mi'+(r.notes?' [ride notes: '+r.notes+']':'')).join('\n')||'No ride data.';
+  const recentBW=bwLogs.slice(0,3).map(e=>e.date+': '+e.weight+' lbs').join(', ')||'No body weight data.';
+  const ftpContext=ftpLogs.length?'Current FTP: '+ftpLogs[0].watts+'W (tested '+ftpLogs[0].date+', '+ftpLogs[0].protocol+')':'FTP not yet tested.';
+  const t=getTMs();
+  const strengthTargets=['squat','deadlift','floor'].map(k=>{
+    const name={squat:'Back squat',deadlift:'Conventional deadlift',floor:'Floor press'}[k];
+    const tm={squat:t.squat,deadlift:t.deadlift,floor:t.floor}[k];
+    return name+' TM '+tm+'; work sets '+get531Sets(tm,cw).map(s=>s.weight+'×'+s.reps+(s.amrap?'+':'')).join(', ');
+  }).join('\n');
+  const prompt='You are a strength and conditioning coach. Generate a specific, actionable session for a strength + Peloton plan.\n\nSession requested: '+type+'. Cycle '+cn+', Week '+cw+' ('+(cw===4?'deload':'training')+').\n\nTraining maxes and fixed 5/3/1 work:\n'+strengthTargets+'\n\nDefault assistance on strength day:\n- Romanian deadlift 3×8, assistance only, not a training-max lift\n- Landmine row 3×10\n- Core carry, Pallof press, or plank 3 sets\n\nAthlete profile:\n- Goals: improve aerobic capacity and maintain/build muscle mass\n- Key lifts: back squat, conventional deadlift, floor press\n- Right shoulder: '+shoulder+'/5 pain today. NO overhead pressing, kipping, dips, or high-rep shoulder fatigue. Floor press only if pain-free.\n- Equipment: full open gym + Peloton. Time: 50-60 min max.\n- Recent body weight: '+recentBW+'\n- Cycling fitness: '+ftpContext+'\n\nRecent strength sessions:\n'+recentLogs+'\n\nRecent rides:\n'+recentRides+'\n\nToday notes: '+(notes||'none')+'\n\nReturn a concise workout. For strength day, keep the exact programmed work-set weights unless shoulder pain or fatigue requires a reduction. For Peloton, recommend the day type, duration, zones, and recovery constraint. Include a brief warm-up, working plan, one cue per main lift or ride focus, and a recovery note.';
+  const output=document.getElementById('ai-output');
+  output.style.display='block';
+  output.innerHTML='<span style="color:var(--color-text-secondary);font-style:italic;">Generating your session...</span>';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    if(data.error){output.textContent='API error: '+data.error.message;return;}
+    output.textContent=data.content?.map(b=>b.type==='text'?b.text:'').join('')||'No response.';
+  }catch(e){output.textContent='Could not connect. Check your connection and try again.';}
+}
+
+function updateStaticCopy(){
+  const subtitle=document.querySelector('.app > div:first-child div:nth-child(2)');
+  if(subtitle) subtitle.textContent='Strength + Peloton training · One-day 5/3/1 gym cycle';
+  const phaseBar=document.querySelector('.phase-bar');
+  if(phaseBar) phaseBar.innerHTML='<div class="phase-block strength"><div class="phase-label strength">Week 1</div><div class="phase-weeks">5s</div></div><div class="phase-block strength"><div class="phase-label strength">Week 2</div><div class="phase-weeks">3s</div></div><div class="phase-block strength"><div class="phase-label strength">Week 3</div><div class="phase-weeks">5/3/1</div></div><div class="phase-block taper"><div class="phase-label taper">Week 4</div><div class="phase-weeks">Deload</div></div>';
+  const logDay=document.getElementById('log-day'); if(logDay) logDay.innerHTML='<option value="main">One-day strength session</option>';
+  const exp=document.getElementById('export-filter'); if(exp) exp.innerHTML='<option value="all">All strength sessions</option><option value="rides">Peloton rides</option><option value="bodyweight">Body weight</option><option value="ftp">FTP tests</option>';
+  const aiType=document.getElementById('ai-type'); if(aiType) aiType.innerHTML='<option value="main">One-day strength</option><option value="peloton">Peloton</option>';
+  const aiWeek=document.getElementById('ai-week'); if(aiWeek) aiWeek.innerHTML='<option value="1">Cycle 1 · Week 1</option><option value="2">Cycle 1 · Week 2</option><option value="3">Cycle 1 · Week 3</option><option value="4">Cycle 1 · Week 4</option><option value="5">Cycle 2 · Week 1</option><option value="6">Cycle 2 · Week 2</option><option value="7">Cycle 2 · Week 3</option><option value="8">Cycle 2 · Week 4</option><option value="9">Cycle 3 · Week 1</option><option value="10">Cycle 3 · Week 2</option><option value="11">Cycle 3 · Week 3</option><option value="12">Cycle 3 · Week 4</option>';
+}
+// ── end one-day override ─────────────────────────────────────────────
+updateStaticCopy();
+
+updateWeek();loadLogTemplate();renderRecentLogs();renderWarmup();updateAPIKeyBtn();
 try{if(!localStorage.getItem(VK)){localStorage.setItem(VK,'1');document.getElementById('first-run-note').style.display='block';setTimeout(()=>openImportModal(),400);}}catch(e){}
 document.getElementById('bw-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
 document.getElementById('pel-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
