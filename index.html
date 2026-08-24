@@ -32,7 +32,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);font-family:var(--font-s
     <div class="card">
       <div class="row">
         <div style="min-width:130px;flex:1"><div class="label">Training mode</div><select id="mode-select" onchange="setMode(this.value)"><option value="two-day">Two-day default</option><option value="one-day">One-day fallback</option></select></div>
-        <div style="min-width:110px"><div class="label">Week</div><select id="week-select" onchange="renderAll()"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select></div>
+        <div style="min-width:110px"><div class="label">Week</div><select id="week-select" onchange="saveSettings();renderAll()"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select></div>
         <div style="min-width:110px"><div class="label">Cycle</div><input id="cycle-input" type="number" min="1" value="1" onchange="saveSettings();renderAll()"></div>
       </div>
     </div>
@@ -150,7 +150,7 @@ function copyExport(){const t=document.getElementById('export-preview').textCont
 function openImportModal(){document.getElementById('import-json').value='';document.getElementById('import-status').textContent='';document.getElementById('import-modal').classList.add('open');}
 function closeImportModal(){document.getElementById('import-modal').classList.remove('open');}
 function runImport(){let data;try{data=JSON.parse(document.getElementById('import-json').value);}catch(e){document.getElementById('import-status').textContent='Invalid JSON.';return;}if(Array.isArray(data.logs))logs=data.logs.concat(logs.filter(l=>!data.logs.some(x=>x.id===l.id)));if(data.settings)settings={...settings,...data.settings,tms:{...settings.tms,...(data.settings.tms||{})}};saveLogs();saveSettings();loadSettingsUI();renderAll();document.getElementById('import-status').textContent='Imported.';setTimeout(closeImportModal,1000);}
-function renderAll(){loadSettingsUI();renderProgram();renderWarmup();loadLogTemplate();renderRecentLogs();renderProgress();renderExport();}
+function renderAll(){saveSettings();loadSettingsUI();renderProgram();renderWarmup();loadLogTemplate();renderRecentLogs();renderProgress();renderExport();}
 loadSettingsUI();document.getElementById('log-date').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});renderAll();
 </script>
 </body>
