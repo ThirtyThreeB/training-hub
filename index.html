@@ -6,10 +6,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Strength Hub v7.7">
+<meta name="apple-mobile-web-app-title" content="Strength Hub v7.8">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1c1b19" media="(prefers-color-scheme: dark)">
-<title>Strength Hub v7.7</title>
+<title>Strength Hub v7.8</title>
 <style>
 :root{--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--text:#1a1a1a;--muted:#666;--bg:#f5f5f4;--card:#fff;--border:#e5e5e4;--border2:#d4d4d3;--blue:#3266ad;--green:#1D9E75;--amber:#BA7517;--red:#993C1D;--purple:#7C5CBF;--radius:10px;--radius2:6px;}
 @media(prefers-color-scheme:dark){:root{--text:#f0ede8;--muted:#a09d99;--bg:#1c1b19;--card:#2a2927;--border:#3a3835;--border2:#4a4845;}}
@@ -18,7 +18,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);font-family:var(--font-s
 </head>
 <body>
 <div class="app">
-  <div class="top"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div class="title">Strength Hub</div><span class="badge gray" style="font-weight:600">v7.7</span></div><div class="subtitle">Two-day 5/3/1 gym tracker · workout prompt · Week 3 progression</div><div id="week-status-header" class="note" style="margin-top:10px;margin-bottom:0"></div></div>
+  <div class="top"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div class="title">Strength Hub</div><span class="badge gray" style="font-weight:600">v7.8</span></div><div class="subtitle">Two-day 5/3/1 gym tracker · cycle/week controls · Week 3 progression</div><div id="week-status-header" class="note" style="margin-top:10px;margin-bottom:0"></div></div>
   <div class="tabs">
     <button class="tab active" data-tab="program" onclick="switchTab('program')">Program</button>
     <button class="tab" data-tab="warmup" onclick="switchTab('warmup')">Warm-up</button>
@@ -125,6 +125,21 @@ html,body{margin:0;min-height:100%;background:var(--bg);font-family:var(--font-s
 
   <div id="panel-settings" class="panel">
     <div class="card">
+      <div class="between" style="margin-bottom:8px"><div class="section-title" style="margin:0">Current cycle / week</div><button class="btn primary small" onclick="startNewCycleManual()">Start new cycle</button></div>
+      <div class="grid3">
+        <div><div class="label">Cycle</div><input id="settings-cycle-input" type="number" min="1" value="1" onchange="applyPositionSettings()"></div>
+        <div><div class="label">Week</div><select id="settings-week-select" onchange="applyPositionSettings()"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select></div>
+        <div><div class="label">Training mode</div><select id="settings-mode-select" onchange="applyPositionSettings()"><option value="two-day">Two-day default</option><option value="one-day">One-day fallback</option></select></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" onclick="setWeekManual(1)">Set Week 1</button>
+        <button class="btn" onclick="setLogSession('squat')">Go to Squat Day</button>
+        <button class="btn" onclick="setLogSession('deadlift')">Go to Deadlift Day</button>
+        <button class="btn" onclick="setLogSession('fallback')">Use Combined Day</button>
+      </div>
+      <div id="position-status" class="subtle" style="margin-top:8px">Use this when the app opens on the wrong week after a GitHub update or after finishing a cycle.</div>
+    </div>
+    <div class="card">
       <div class="section-title">Training maxes</div>
       <div class="grid3">
         <div><div class="label">Back squat TM</div><input id="tm-squat" type="number" value="220" onchange="saveSettings();renderAll()"></div>
@@ -152,7 +167,7 @@ html,body{margin:0;min-height:100%;background:var(--bg);font-family:var(--font-s
 </div>
 
 <div class="modal-backdrop" id="import-modal"><div class="modal"><div class="modal-title">Import JSON backup</div><textarea id="import-json" placeholder='Paste JSON backup here'></textarea><div id="import-status" class="subtle" style="margin-top:8px"></div><div class="footer"><button class="btn" onclick="closeImportModal()">Cancel</button><button class="btn primary" onclick="runImport()">Import</button></div></div></div>
-<div class="modal-backdrop" id="workout-modal"><div class="modal"><div class="modal-title">Confirm today’s workout</div><div id="workout-modal-body" class="subtle"></div><div class="footer" style="flex-wrap:wrap"><button class="btn" onclick="closeWorkoutPrompt()">Keep current</button><button class="btn" onclick="startWorkoutFromPrompt('squat')">Start Squat Day</button><button class="btn" onclick="startWorkoutFromPrompt('deadlift')">Start Deadlift Day</button><button class="btn" onclick="startWorkoutFromPrompt('fallback')">Use One-Day Combined</button><button class="btn primary" onclick="startSuggestedWorkout()" id="start-suggested-btn">Start suggested</button></div></div></div>
+<div class="modal-backdrop" id="workout-modal"><div class="modal"><div class="modal-title">Confirm today’s workout</div><div id="workout-modal-body" class="subtle"></div><div class="footer" style="flex-wrap:wrap"><button class="btn" onclick="closeWorkoutPrompt()">Keep current</button><button class="btn" onclick="openPositionSettings()">Change cycle/week</button><button class="btn" onclick="startWorkoutFromPrompt('squat')">Start Squat Day</button><button class="btn" onclick="startWorkoutFromPrompt('deadlift')">Start Deadlift Day</button><button class="btn" onclick="startWorkoutFromPrompt('fallback')">Use One-Day Combined</button><button class="btn primary" onclick="startSuggestedWorkout()" id="start-suggested-btn">Start suggested</button></div></div></div>
 
 <script>
 const LOG_KEY='strength_hub_logs_v1';
@@ -180,8 +195,14 @@ function saveSettings(){settings.mode=document.getElementById('mode-select')?.va
 function round5(n){return Math.round(n/5)*5;}
 function workSets(liftKey,week){const tm=settings.tms[liftKey];return PCTS[week].map((p,i)=>({liftKey,lift:LIFTS[liftKey],pct:p,weight:round5(tm*p/100),reps:REPS[week][i],amrap:week!==4&&i===2,min:MIN_REPS[week]}));}
 function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.querySelector(`[data-tab="${t}"]`).classList.add('active');document.getElementById('panel-'+t).classList.add('active');if(t==='program')renderProgram();if(t==='warmup')renderWarmup();if(t==='log'){loadLogTemplate();renderRecentLogs();}if(t==='progress')renderProgress();if(t==='export')renderExport();if(t==='settings')loadSettingsUI();}
-function setMode(m){settings.mode=m;saveSettings();renderAll();}
-function loadSettingsUI(){document.getElementById('mode-select').value=settings.mode;document.getElementById('week-select').value=settings.week;document.getElementById('cycle-input').value=settings.cycle;document.getElementById('tm-squat').value=settings.tms.squat;document.getElementById('tm-deadlift').value=settings.tms.deadlift;document.getElementById('tm-floor').value=settings.tms.floor;['press','row','quad','hamstring'].forEach(k=>{const el=document.getElementById('pref-'+k);if(el)el.value=settings.prefs[k]||el.value;});}
+function setMode(m){settings.mode=m;loadSettingsUI();persistSettings();renderAll();}
+function setVal(id,val){const el=document.getElementById(id);if(el)el.value=val;}
+function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function loadSettingsUI(){setVal('mode-select',settings.mode);setVal('settings-mode-select',settings.mode);setVal('week-select',settings.week);setVal('settings-week-select',settings.week);setVal('cycle-input',settings.cycle);setVal('settings-cycle-input',settings.cycle);setVal('tm-squat',settings.tms.squat);setVal('tm-deadlift',settings.tms.deadlift);setVal('tm-floor',settings.tms.floor);['press','row','quad','hamstring'].forEach(k=>{const el=document.getElementById('pref-'+k);if(el)el.value=settings.prefs[k]||el.value;});}
+function applyPositionSettings(){const c=parseInt(document.getElementById('settings-cycle-input')?.value);const w=parseInt(document.getElementById('settings-week-select')?.value);const m=document.getElementById('settings-mode-select')?.value;if(c>0)settings.cycle=c;if(w>=1&&w<=4)settings.week=w;if(m)settings.mode=m;loadSettingsUI();persistSettings();renderAll();setText('position-status','Set to Cycle '+settings.cycle+', Week '+settings.week+', '+(settings.mode==='two-day'?'two-day default':'one-day fallback')+'.');}
+function setWeekManual(w){settings.week=w;loadSettingsUI();persistSettings();renderAll();setText('position-status','Set to Cycle '+settings.cycle+', Week '+settings.week+'.');}
+function startNewCycleManual(){const next=(settings.cycle||1)+1;if(!confirm('Start Cycle '+next+' Week 1? This does not change training maxes.'))return;settings.cycle=next;settings.week=1;settings.mode='two-day';loadSettingsUI();persistSettings();renderAll();setText('position-status','Started Cycle '+settings.cycle+', Week 1. Squat Day is the next suggested workout.');setLogSession('squat');}
+function openPositionSettings(){closeWorkoutPrompt();switchTab('settings');setText('position-status','Adjust cycle/week here, then return to the log.');}
 function setsTable(sets){return `<table class="lift-table"><thead><tr><th>Set</th><th>%</th><th>Weight</th><th>Reps</th></tr></thead><tbody>${sets.map((s,i)=>`<tr><td>${i+1}${s.amrap?' AMRAP':''}</td><td>${s.pct}%</td><td>${s.weight} lb</td><td>${s.reps}</td></tr>`).join('')}</tbody></table>`;}
 function renderProgram(){saveSettings();const w=settings.week;const sug=suggestedWorkout();let html=`<div class="card"><div class="between"><div><div class="section-title" style="margin:0">Current status</div><div class="subtle">Cycle ${settings.cycle}, Week ${w}. Suggested next workout: <strong style="color:var(--text)">${sug.label}</strong>.</div></div><button class="btn small" onclick="openWorkoutPrompt(true)">Confirm workout</button></div></div>`;if(settings.mode==='two-day'){
 html+=`<div class="day-card squat"><div class="between"><div class="day-title">Day 1 — Squat emphasis</div><span class="badge blue">Required</span></div><div class="day-sub">Target: under 60 minutes. Back squat main work, ${settings.prefs.hamstring||'RDL'} assistance, press, row, shoulder prehab.</div>${setsTable(workSets('squat',w))}<div class="day-sub"><strong>Assistance choices:</strong> Hamstring/posterior chain: ${ACCESSORY_OPTIONS.hamstring.join(' / ')}. Press: ${ACCESSORY_OPTIONS.press.join(' / ')}. Row: ${ACCESSORY_OPTIONS.row.join(' / ')}.</div><div class="day-sub"><strong>Default today:</strong> ${settings.prefs.hamstring||'RDL'} 2–3×6–8 · ${settings.prefs.press||'Floor press'} ${w===4?'2×8 easy':'3×6–10'} · ${settings.prefs.row||'Chest-supported machine row'} 3×8–12 · external rotation + face pull 2×15.</div><div class="day-sub"><strong>Optional if ahead:</strong> split squat, carry, or sled. Skip first when short on time.</div></div>`;
@@ -262,17 +283,21 @@ function openWorkoutPrompt(force=false){const modal=document.getElementById('wor
 function closeWorkoutPrompt(){document.getElementById('workout-modal')?.classList.remove('open');}
 function setLogSession(session){const el=document.getElementById('log-session');if(el){el.value=session;loadLogTemplate();}switchTab('log');}
 function startWorkoutFromPrompt(session){closeWorkoutPrompt();settings.mode=session==='fallback'?'one-day':'two-day';loadSettingsUI();persistSettings();renderAll();setLogSession(session);}
-function startSuggestedWorkout(){const sug=suggestedWorkout();if(sug.advance)advanceWeekIfNeeded();closeWorkoutPrompt();settings.mode=sug.session==='fallback'?'one-day':'two-day';loadSettingsUI();persistSettings();renderAll();setLogSession(sug.session==='fallback'?'fallback':'squat');}
+function startSuggestedWorkout(){const sug=suggestedWorkout();let session=sug.session;if(sug.advance){advanceWeekIfNeeded();session='squat';}closeWorkoutPrompt();settings.mode=session==='fallback'?'one-day':'two-day';loadSettingsUI();persistSettings();renderAll();setLogSession(session);}
 function renderWeekStatus(){
   const w=settings.week||1;
   const c=settings.cycle||1;
   const stats=weekSessionStats(c,w);
   const sug=suggestedWorkout();
-  const latest=logs.filter(l=>(l.cycle||0)===c)[0];
+  const latestSameCycle=logs.filter(l=>(l.cycle||0)===c)[0];
+  const latestAny=logs[0];
   let msg='Current program: Cycle '+c+', Week '+w+'. Suggested next workout: '+sug.label+'. ';
-  if(!latest){msg+='No workouts logged this cycle yet. Confirm week and workout before saving.';}
-  else if((latest.week||0)<w){msg+='First workout after moving from Week '+(latest.week||'?')+' to Week '+w+'? Confirm before logging.';}
-  else if((latest.week||0)>w){msg+='Selected week is behind latest logged Week '+latest.week+'. Change if needed.';}
+  if(!latestSameCycle){
+    if(latestAny&&((latestAny.cycle||0)<c))msg+='New cycle selected. Confirm Week 1 and workout before saving.';
+    else msg+='No workouts logged this cycle yet. Confirm week and workout before saving.';
+  }
+  else if((latestSameCycle.week||0)<w){msg+='First workout after moving from Week '+(latestSameCycle.week||'?')+' to Week '+w+'? Confirm before logging.';}
+  else if((latestSameCycle.week||0)>w){msg+='Selected week is behind latest logged Week '+latestSameCycle.week+' in this cycle. Change if needed.';}
   else{msg+='This week: '+(stats.hasFallback?'combined fallback logged.':(stats.hasSquat?'squat logged':'squat open')+' · '+(stats.hasDeadlift?'deadlift logged':'deadlift open')+'.');}
   const header=document.getElementById('week-status-header');
   const log=document.getElementById('week-status-log');
